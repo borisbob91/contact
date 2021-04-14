@@ -9,11 +9,11 @@ from interface import  tkinker_import
 
 from interface.interface import  Interface
 
-def main():
-    app = tkinter.Tk()
-    window = Interface(app)
-    app.mainloop()
+from interface.login_gui import login_gui_launcher
+
+
 
 if __name__ == '__main__':
     config = config.configure()
-    main()
+    login_gui_launcher()
+

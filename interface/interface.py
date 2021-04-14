@@ -75,9 +75,9 @@ class Interface:
         self.sub_menu3 = tk.Menu(top, tearoff=0)
         self.menubar.add_cascade(menu=self.sub_menu3, activebackground=_active_bg,  activeforeground=_active_ft,
                 label="Aide")
-        self.sub_menu3.add_command(label="apropos", command=self.show_about_menu)
+        self.sub_menu3.add_command(label="apropos", command=self.__show_about_menu)
         self.sub_menu3.add_command(label='contact')
-        self.sub_menu3.add_command(label='Aide', command=self.show_help_menu)
+        self.sub_menu3.add_command(label='Aide', command=self.__show_help_menu)
 
         
 
@@ -107,7 +107,7 @@ class Interface:
         
 
     """__________________Show help templates zone______________________ """
-    def show_about_menu(self):
+    def __show_about_menu(self):
         about = tkinter.Toplevel()
 
         sub_window_x = Interface._app_widht // 2
@@ -125,7 +125,7 @@ class Interface:
         lb = tkinter.Label(about, text='bonjour je suis l\'auteur ')
         lb.pack()
 
-    def show_help_menu(self):
+    def __show_help_menu(self):
         helps = tkinter.Toplevel()
 
         sub_window_x = Interface._app_widht // 2
@@ -140,10 +140,19 @@ class Interface:
         helps.title('demande d\'aide')
         helps.geometry(f"{sub_window_x}x{sub_window_y}+{sub_window_x}+{sub_window_y}")
         helps.resizable(False, False)
-        lb = tkinter.Label(helps, text='bonjour, Vous avez besoin d\aide ?')
+        lb = tkinter.Label(helps, text='bonjour, Vous avez besoin d\'aide ?')
         lb.pack()
 
 
+def main_laucnher():
+    global main_app
+    main_app = tkinter.Tk()
+    global main_window
+    main_window = Interface(main_app)
+    main_app.mainloop()
+
+def main_destroy():
+    main_app.destroy()
 
 
 if __name__ == '__main__':
