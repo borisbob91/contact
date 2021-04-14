@@ -1,6 +1,6 @@
 from interface.tkinker_import import *
+from interface.pop.add_contact_gui import pop_menu
 
-import  os 
 from .tooltip import ToolTip
 
 
@@ -96,7 +96,7 @@ class ContactGui:
                 self.TButton2_1_1.place(relx=0.367, rely=0.842, height=22, width=124
                         , bordermode='ignore')
                 self.TButton2_1_1.configure(takefocus="")
-                self.TButton2_1_1.configure(text='''Ajouter nouveau''')
+                self.TButton2_1_1.configure(text='''Ajouter nouveau''', command=pop_menu)
                 self.tooltip_font = "TkDefaultFont"
                 self.TButton2_1_1_tooltip = \
                 ToolTip(self.TButton2_1_1, self.tooltip_font, '''ajouter un nouveau contact''')
