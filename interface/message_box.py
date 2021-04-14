@@ -26,5 +26,5 @@ def show_cancel_yes_no(title = title, msg = msg):
 	return response
 
 def show_ok_cancel(title= title, msg = msg):
-	response = messagebox..askokcancel(title, msg)
+	response = messagebox.askokcancel(title, msg)
 	return response
