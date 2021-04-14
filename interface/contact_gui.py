@@ -3,7 +3,17 @@ from interface.pop.add_contact_gui import pop_menu
 
 from .tooltip import ToolTip
 
+from PIL import Image,ImageTk
+import os
+import sys
 
+File_PATH = os.path.abspath(__file__)
+BASE_DIR = os.path.dirname(File_PATH)
+
+prog_call = sys.argv[0]
+prog_location = os.path.split(prog_call)[0]
+
+img = ''
 class ContactGui:
        
 
@@ -57,14 +67,27 @@ class ContactGui:
                 self.Entry2_2.configure(selectbackground="blue")
                 self.Entry2_2.configure(selectforeground="white")
 
-                self.Canvas1 = tk.Canvas(self.Labelframe2)
-                self.Canvas1.place(relx=0.658, rely=0.067, relheight=0.565
-                , relwidth=0.252, bordermode='ignore')
-                self.Canvas1.configure(borderwidth="2")
-                self.Canvas1.configure(relief="ridge")
-                self.Canvas1.configure(selectbackground="blue")
-                self.Canvas1.configure(selectforeground="white")
-                
+
+                '''self.photo_label = tk.Label(self.Labelframe2)
+                self.photo_label.place(relx=0.658, rely=0.067, relheight=0.565
+                , relwidth=0.252, bordermode='ignore', x = 0, y=0)
+                self.photo_label.configure(borderwidth="2")
+                self.photo_label.configure(relief="ridge")
+                self.photo_label.configure(image = photo)'''
+
+
+                self.photo_contact = tk.Label(self.Labelframe2)
+                photo_location = os.path.join(prog_location,"./images/img.jpg")
+                load = Image.open(photo_location)
+                load.thumbnail((139,155))
+
+                global _img0
+                _img0 = ImageTk.PhotoImage(load)
+                self.photo_contact.configure(image=_img0)
+                self.photo_contact.configure(relief="groove")
+                self.photo_contact.configure(text='''Label''')
+                self.photo_contact.place(relx=0.668, rely=0.081, height=155, width=139
+                        , bordermode='ignore')
 
                 self.TButton2 = ttk.Button(self.Labelframe2)
                 self.TButton2.place(relx=0.68, rely=0.681, height=22, width=124

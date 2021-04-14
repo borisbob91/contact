@@ -12,7 +12,7 @@ from interface.contact_list_gui import ContactListGui
 
 from interface.pop.add_contact_gui import pop_menu
 
-
+from interface.about_gui import about_gui_launcher
 
 class Interface:
 
@@ -75,7 +75,7 @@ class Interface:
         self.sub_menu3 = tk.Menu(top, tearoff=0)
         self.menubar.add_cascade(menu=self.sub_menu3, activebackground=_active_bg,  activeforeground=_active_ft,
                 label="Aide")
-        self.sub_menu3.add_command(label="apropos", command=self.__show_about_menu)
+        self.sub_menu3.add_command(label="apropos", command=about_gui_launcher)
         self.sub_menu3.add_command(label='contact')
         self.sub_menu3.add_command(label='Aide', command=self.__show_help_menu)
 
@@ -124,6 +124,9 @@ class Interface:
         about.resizable(False, False)
         lb = tkinter.Label(about, text='bonjour je suis l\'auteur ')
         lb.pack()
+    
+    def _show_about_menu(self):
+        self.__show_about_menu()
 
     def __show_help_menu(self):
         helps = tkinter.Toplevel()

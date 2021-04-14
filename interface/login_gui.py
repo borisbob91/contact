@@ -5,13 +5,20 @@ from .tkinker_import import *
 from .support import *
 
 from .tooltip import ToolTip
-
+#from .interface import Interface
 from interface.interface import main_laucnher
-from interface.message_box import show_warming, show_yes_no
+from interface.message_box import (show_warming, show_yes_no, 
+                                    show_error)
+from interface.about_gui import about_gui_launcher
+
+from models import UserModel
+
+username = ''
 
 class LoginSignup:
     _password = ''
     _username = ''
+    _login_min = 3
     def __init__(self, top=None):
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
@@ -27,6 +34,13 @@ class LoginSignup:
         top.resizable(1,  1)
         top.title("Identification")
         top.configure(background="#82d8c1")
+
+        self.menubar = tk.Menu(top,font="TkMenuFont",bg='#8fefd6',fg='#fff')
+        top.configure(menu = self.menubar)
+
+        self.sub_menu = tk.Menu(top,tearoff=0)
+        self.menubar.add_cascade(menu=self.sub_menu, label="aide")
+        self.sub_menu.add_command(label="Auteur", command=about_gui_launcher)
 
         self.Labelframe1 = tk.LabelFrame(top)
         self.Labelframe1.place(relx=0.483, rely=0.067, relheight=0.744
@@ -151,7 +165,7 @@ class LoginSignup:
         self.sinup_btn.configure(font="-family {courier 10 pitch} -size 13")
         self.sinup_btn.configure(foreground="#fff")
         self.sinup_btn.configure(relief="groove")
-        self.sinup_btn.configure(text='''Nouveau Compte''')
+        self.sinup_btn.configure(text='''Nouveau Compte''', command=self._get_new_user)
 
         self.secret_label = tk.Label(self.Labelframe1_1)
         self.secret_label.place(relx=0.081, rely=0.565, height=35, width=173
@@ -175,32 +189,69 @@ class LoginSignup:
         self.secret_entry.configure(selectbackground="blue")
         self.secret_entry.configure(selectforeground="white")
 
+        
+
+        self.cancel_login_btn = tk.Button(top)
+        self.cancel_login_btn.place(relx=0.617, rely=0.831, height=25, width=110)
+
+        self.cancel_login_btn.configure(background="#d82b37")
+        self.cancel_login_btn.configure(font="-family {clean} -size 12")
+        self.cancel_login_btn.configure(foreground="#fff")
+        self.cancel_login_btn.configure(highlightcolor="#ffffff")
+        self.cancel_login_btn.configure(text='''Quitter''', command=login_destry)
+
+        
         self.Label1 = tk.Label(top)
         self.Label1.place(relx=0.583, rely=0.911, height=15, width=219)
         self.Label1.configure(text='''Secure Login by BorisBob''')
-    
-
 
     def _get_login_value(self):
-
-        if len(self.password_entry.get()) > 3 and len(self.username_entry.get()) > 3 :
+        
+        if len(self.password_entry.get()) > LoginSignup._login_min and \
+        len(self.username_entry.get()) > LoginSignup._login_min :
             pass_value = self.password_entry.get()
             username_value = self.username_entry.get()
             #print(username_value,' : ',pass_value)
             
             LoginSignup._password = pass_value
             LoginSignup._username = username_value
-
+            username = LoginSignup._username
             if LoginSignup._username == 'boris' and LoginSignup._password  == 'leponge':
                 login_destry()
                 main_laucnher()
             else:
                 erro_title = 'Informations Incorrecte'
-                error_msg='Veuillez enttrez un nom d\'Utilisateur et mot de passe correcte'
-                show_warming(erro_title, error_msg)
+                error_msg='Les identifiants saisies sont incorrectes'
+                show_error(erro_title, error_msg)
         else:
-            c = show_yes_no()
-            print(c)
+            erro_title = 'Attentions'
+            error_msg='Veuillez enttrez un nom d\'Utilisateur et mot de passe'
+            show_warming(erro_title, error_msg)
+
+    def _get_new_user(self):
+
+        if len(self.nw_username_entry.get()) > LoginSignup._login_min and \
+        len(self.nw_password_entry.get()) > LoginSignup._login_min and \
+        len(self.secret_entry.get()) > 4 :
+            username_value = self.nw_username_entry.get()
+            pass_value = self.nw_password_entry.get()
+            secret_value = self.secret_entry.get()
+            print(username_value,pass_value,secret_value)
+
+            new_user = UserModel(username_value, pass_value, secret_value)
+
+            req = new_user.add_user()
+            
+            if req :
+                self.nw_username_entry.delete(0, len(username_value))
+                self.nw_password_entry.delete(0, len(pass_value))
+                self.secret_entry.delete(0, len(secret_value))
+            
+
+        else :
+            erro_title = 'Attentions'
+            error_msg='Veuillez remplir les champs ci-dessous'
+            show_warming(erro_title, error_msg)
 
 def login_gui_launcher():
     global app
