@@ -96,17 +96,67 @@ class UserModel:
 		else:
 			return None
 
-
 class ContactModel:
-	def __init__(self, nom, prenoms, numero, photo):
-		self.nom = nom
-		self.prenoms = prenoms
-		self.numero = numero
-		self.photo = photo
+	def __init__(self, nom, prenoms , numero, photo ):
+		self._contact_name = nom
+		self._contact_lastname = prenoms
+		self._contact_number = numero
+		self._contact_photo_name = photo
 
 	def __get_contact_query(self):
 		
 		req ='''SELECT * FROM t_repertoire
 				CROSS JOIN t_user 	
 				WHERE t_repertoire.t_user_id = t_user.id AND t_user.id = 1 '''
+
+	def __name_checker(self):
+
+		db = sqlite3.Connection(config.db_root)
+		cursor = db.cursor()
+		req = "SELECT c_name FROM t_repertoire WHERE c_name = ? "
+		user_to_check = self._contact_name
+		cursor.execute(req, (user_to_check,))
+		resultat = cursor.fetchone()
+		db.close()
+
+		return resultat
+
+	def __number_checker(self):
+
+		db = sqlite3.Connection(config.db_root)
+		cursor = db.cursor()
+		req = "SELECT c_numero FROM t_repertoire WHERE c_numero = ? "
+		to_check = self._contact_number
+		cursor.execute(req, (to_check,))
+		resultat = cursor.fetchone()
+		db.close()
+
+		return resultat
+
+
+	def contact_validator(self) -> dict:
+		
+		check_name = self.__name_checker()
+		
+		check_number = self.__number_checker()
+
+		return {'name': check_name , 'number': check_number}
+
+	
+	def set_photo(self, photo_name):
+		self._contact_photo_name = photo_name
+
+	def get_last_id(self):
+		db = sqlite3.Connection(config.db_root)
+		cursor = db.cursor()
+		req = '''SELECT id FROM t_repertoire ORDER By id DESC'''
+		cursor.execute(req)
+		resultat = list(cursor.fetchone())
+		db.close()
+
+		return resultat
+
+
+
+
 	

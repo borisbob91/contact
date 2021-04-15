@@ -7,10 +7,8 @@ import pathlib
 
 FILE_PATH = os.path.abspath(__file__)
 BASE_DIR = os.path.dirname(FILE_PATH)
-DATA_DIR = os.path.join(BASE_DIR, 'data')
-SIMPLRE_DIR = os.path.join(DATA_DIR, 'simples')
-SIMPLRE_INPUTS = os.path.join(SIMPLRE_DIR, 'inputs')
-OUTPOUTS_DIR = os.path.join(SIMPLRE_DIR, 'outputs')
+IMAGES_DIR = os.path.join(BASE_DIR, 'images')
+
 
 
 db_root = 'models/contact.db'

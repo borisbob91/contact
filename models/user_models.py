@@ -36,6 +36,7 @@ class UserModel:
 
 		if resultat != 0:
 			find = 1
+			
 		else:
 			find = 0
 		

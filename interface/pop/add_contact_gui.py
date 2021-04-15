@@ -1,9 +1,11 @@
 from interface.tkinker_import import *
 
 from interface.support import *
-
+from models.models import ContactModel
 from interface.message_box import show_info 
 from PIL import Image, ImageTk
+import base64
+import config
 
 class PopMenu:
     load_photo = None
@@ -84,32 +86,63 @@ class PopMenu:
         self.photo_view.configure(text='''Label''')
 
     def _add_contact(self):
-        c_name_value   = self.name_entry.get()
+        c_name_value         = self.name_entry.get()
         c_last_name_value    = self.prenoms_entry.get()
-        c_number_value = self.numero_entry.get()
-        c_photo = PopMenu.load_photo
-        print(f'user:{c_name_value }-{c_last_name_value}-{c_number_value}-{c_photo}')
+        c_number_value       = self.numero_entry.get()
+        c_photo              = ''
+
+        if len(c_name_value) >= 2 and len(c_number_value) >= 3 :
+
+            NewContact = ContactModel(nom =c_name_value, prenoms = c_last_name_value, numero=c_number_value, photo= c_photo)
+
+            if PopMenu.load_photo != None:
+                last_id = list(NewContact.get_last_id())
+                last_id = last_id[0]
+                NewContact.set_photo(f'img_{last_id + 1}')
+
+            validate = NewContact.contact_validator()
+            if validate.get('name') or validate.get('number'):
+                if validate.get('name'):
+                    show_info('error', 'Le nom entré exite déja :')
+                else :
+                    show_info('error', 'Le numero entré exite déja :')
+            else:
+                print('on continue l\'enregistrement ici')
+
+
+        else:
+            show_info('error', 'veuillez fournit au moin un nom et numero ')
+            pop.mainloop()
+
+
         pop.mainloop()
 
     def __get_photo(self):
         path_photo = filedialog.askopenfilename(parent= pop ,initialdir="/", title = 'select photo', \
-            filetypes=(("photo png", "*.png"), ("photo jpg", "*.jpg"), ("photo gif", ".gif") ) )
+            filetypes=(("photo png", "*.png"), ("photo jpg", "*.jpg"), ("photo gif", ".gif"),("photo jpeg", "*.jpeg") ) )
         PopMenu.load_photo = path_photo
 
     def _select_photo(self):
         self.__get_photo()
 
         if PopMenu.load_photo != None:
-            self._show_photo()
+            self.__show_photo()
             
+    def __save_user_photo(self, photo_path, file_name = '1'):
+        imag_file = Image.open(photo_path)
+        imag_file = imag_file.convert('RGB')
+        imag_file.save((f'{config.IMAGES_DIR}/img_{file_name}.png'))
 
-    def _show_photo(self):
+    def __show_photo(self):
         global img
         loaded = Image.open(PopMenu.load_photo)
         loaded.thumbnail((130,140))
         img = ImageTk.PhotoImage(loaded)
         self.photo_view.configure(image = img)
 
+    def contact_valide(self):
+        name   = self.name_entry.get()
+        number = self.numero_entry.get()
 
 
 def pop_menu_launcher():
