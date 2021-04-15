@@ -3,9 +3,10 @@ from interface.tkinker_import import *
 from interface.support import *
 
 from interface.message_box import show_info 
-from argparse import FileType
+from PIL import Image, ImageTk
 
 class PopMenu:
+    load_photo = None
     def __init__(self, top):
         _app_widht  = 912
         _app_height = 663
@@ -46,59 +47,69 @@ class PopMenu:
         self.name_entry.configure(background="white")
         self.name_entry.configure(font="-family {gothic} -size 12")
 
-        self.Entry1_1 = tk.Entry(top)
-        self.Entry1_1.place(relx=0.326, rely=0.229, height=27, relwidth=0.535)
-        self.Entry1_1.configure(background="white")
-        self.Entry1_1.configure(cursor="fleur")
-        self.Entry1_1.configure(font="-family {gothic} -size 12")
-        self.Entry1_1.configure(selectbackground="blue")
-        self.Entry1_1.configure(selectforeground="white")
+        self.prenoms_entry = tk.Entry(top)
+        self.prenoms_entry.place(relx=0.326, rely=0.229, height=27, relwidth=0.535)
+        self.prenoms_entry.configure(background="white")
+        self.prenoms_entry.configure(font="-family {gothic} -size 12")
+        self.prenoms_entry.configure(selectbackground="blue")
+        self.prenoms_entry.configure(selectforeground="white")
 
-        self.Entry1_2 = tk.Entry(top)
-        self.Entry1_2.place(relx=0.328, rely=0.378, height=27, relwidth=0.535)
-        self.Entry1_2.configure(background="white")
-        self.Entry1_2.configure(font="-family {gothic} -size 12")
-        self.Entry1_2.configure(selectbackground="blue")
-        self.Entry1_2.configure(selectforeground="white")
+        self.numero_entry = tk.Entry(top)
+        self.numero_entry.place(relx=0.328, rely=0.378, height=27, relwidth=0.535)
+        self.numero_entry.configure(background="white")
+        self.numero_entry.configure(font="-family {gothic} -size 12")
+        self.numero_entry.configure(selectbackground="blue")
+        self.numero_entry.configure(selectforeground="white")
 
         self.Button1 = ttk.Button(top)
         self.Button1.place(relx=0.448, rely=0.866, height=25, width=140)
         self.Button1.configure(text='''Valider''')
         self.Button1.configure(command = self._add_contact)
 
-        self.Button2 = tk.Button(top)
-        self.Button2.place(relx=0.087, rely=0.61, height=25, width=90)
-        self.Button2.configure(cursor="fleur")
-        self.Button2.configure(font="-family {gothic} -size 12")
-        self.Button2.configure(text='''Photo''', command=self._get_photo)
+        self.select_photo_btn = tk.Button(top)
+        self.select_photo_btn.place(relx=0.087, rely=0.61, height=25, width=90)
+        self.select_photo_btn.configure(cursor="fleur")
+        self.select_photo_btn.configure(font="-family {gothic} -size 12")
+        self.select_photo_btn.configure(text='''Photo''', command=self._select_photo)
 
-        self.Button3 = tk.Button(top)
-        self.Button3.place(relx=0.093, rely=0.872, height=25, width=110)
-        self.Button3.configure(text='''Annuler''')
-        self.Button3.configure(command= top.destroy)
+        self.cancel_btn = tk.Button(top)
+        self.cancel_btn.place(relx=0.093, rely=0.872, height=25, width=110)
+        self.cancel_btn.configure(text='''Annuler''')
+        self.cancel_btn.configure(command= top.destroy)
 
-        self.Label2 = tk.Label(top)
-        self.Label2.place(relx=0.413, rely=0.518, height=85, width=159)
-        self.Label2.configure(cursor="fleur")
-        self.Label2.configure(relief="ridge")
-        self.Label2.configure(text='''Label''')
+        self.photo_view = tk.Label(top)
+        self.photo_view.place(relx=0.413, rely=0.518, height=85, width=159)
+        self.photo_view.configure(cursor="fleur")
+        self.photo_view.configure(relief="ridge")
+        self.photo_view.configure(text='''Label''')
 
     def _add_contact(self):
-        c_name_value = self.name_entry.get()
-        c_last_name = self.prenoms_entry.get()
-        c_number = self.numero_entry.get()
-        global c_photo
-        c_photo = ''
-
-        show_info('info', f'contact data {c_name_value, c_photo}')
+        c_name_value   = self.name_entry.get()
+        c_last_name_value    = self.prenoms_entry.get()
+        c_number_value = self.numero_entry.get()
+        c_photo = PopMenu.load_photo
+        print(f'user:{c_name_value }-{c_last_name_value}-{c_number_value}-{c_photo}')
         pop.mainloop()
 
-    def _get_photo(self):
-        c_photo = filedialog.askopenfile(parent= pop ,initialdir="/", title = 'select photo', \
+    def __get_photo(self):
+        path_photo = filedialog.askopenfilename(parent= pop ,initialdir="/", title = 'select photo', \
             filetypes=(("photo png", "*.png"), ("photo jpg", "*.jpg"), ("photo gif", ".gif") ) )
+        PopMenu.load_photo = path_photo
 
-    def  select_photo(self):
-        self._get_photo()
+    def _select_photo(self):
+        self.__get_photo()
+
+        if PopMenu.load_photo != None:
+            self._show_photo()
+            
+
+    def _show_photo(self):
+        global img
+        loaded = Image.open(PopMenu.load_photo)
+        loaded.thumbnail((130,140))
+        img = ImageTk.PhotoImage(loaded)
+        self.photo_view.configure(image = img)
+
 
 
 def pop_menu_launcher():
