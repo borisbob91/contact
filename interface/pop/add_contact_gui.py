@@ -2,6 +2,8 @@ from interface.tkinker_import import *
 
 from interface.support import *
 
+from interface.message_box import show_info 
+
 class PopMenu:
     def __init__(self, top):
         _app_widht  = 912
@@ -20,28 +22,30 @@ class PopMenu:
         top.geometry(f"{sub_window_x}x{sub_window_y}+{sub_window_x}+{sub_window_y}")
         top.resizable(False, False)
 
-        self.Label1 = tk.Label(top)
-        self.Label1.place(relx=0.013, rely=0.11, height=23, width=115)
-        self.Label1.configure(font="-family {gothic} -size 14")
-        self.Label1.configure(text='''Nom :''')
+        self.name_label = tk.Label(top)
+        self.name_label.place(relx=0.013, rely=0.11, height=23, width=115)
+        self.name_label.configure(font="-family {gothic} -size 14")
+        self.name_label.configure(text='''Nom :''')
 
-        self.Label1_1 = tk.Label(top)
-        self.Label1_1.place(relx=0.065, rely=0.262, height=23, width=115)
-        self.Label1_1.configure(activebackground="#f9f9f9")
-        self.Label1_1.configure(font="-family {gothic} -size 14")
-        self.Label1_1.configure(text='''Prénoms :''')
+        self.prenoms_label = tk.Label(top)
+        self.prenoms_label.place(relx=0.065, rely=0.262, height=23, width=115)
+        self.prenoms_label.configure(activebackground="#f9f9f9")
+        self.prenoms_label.configure(font="-family {gothic} -size 14")
+        self.prenoms_label.configure(text='''Prénoms :''')
 
-        self.Label1_2 = tk.Label(top)
-        self.Label1_2.place(relx=0.059, rely=0.387, height=23, width=115)
-        self.Label1_2.configure(activebackground="#f9f9f9")
-        self.Label1_2.configure(cursor="fleur")
-        self.Label1_2.configure(font="-family {gothic} -size 14")
-        self.Label1_2.configure(text='''Numéro :''')
+        self.numero_label = tk.Label(top)
+        self.numero_label.place(relx=0.059, rely=0.387, height=23, width=115)
+        self.numero_label.configure(activebackground="#f9f9f9")
+        self.numero_label.configure(cursor="fleur")
+        self.numero_label.configure(font="-family {gothic} -size 14")
+        self.numero_label.configure(text='''Numéro :''')
 
-        self.Entry1 = tk.Entry(top)
-        self.Entry1.place(relx=0.326, rely=0.098, height=27, relwidth=0.535)
-        self.Entry1.configure(background="white")
-        self.Entry1.configure(font="-family {gothic} -size 12")
+        self.name_entry = tk.Entry(top)
+        self.name_entry.place(relx=0.326, rely=0.098, height=27, relwidth=0.535)
+        self.name_entry.configure(background="white")
+        self.name_entry.configure(font="-family {gothic} -size 12")
+        global c_name_value
+        c_name_value = self.name_entry.get()
 
         self.Entry1_1 = tk.Entry(top)
         self.Entry1_1.place(relx=0.326, rely=0.229, height=27, relwidth=0.535)
@@ -58,9 +62,10 @@ class PopMenu:
         self.Entry1_2.configure(selectbackground="blue")
         self.Entry1_2.configure(selectforeground="white")
 
-        self.Button1 = tk.Button(top)
+        self.Button1 = ttk.Button(top)
         self.Button1.place(relx=0.448, rely=0.866, height=25, width=140)
         self.Button1.configure(text='''Valider''')
+        self.Button1.configure(command = add_contact)
 
         self.Button2 = tk.Button(top)
         self.Button2.place(relx=0.087, rely=0.61, height=25, width=90)
@@ -78,6 +83,14 @@ class PopMenu:
         self.Label2.configure(cursor="fleur")
         self.Label2.configure(relief="ridge")
         self.Label2.configure(text='''Label''')
+
+        def _add_contact(self):
+            print('contact added', c_name_value)
+            show_info('info', 'contact data')
+
+def add_contact():
+    print('contact added', c_name_value)
+    show_info('info', 'contact data')
 
 
 def pop_menu():

@@ -1,5 +1,6 @@
 from interface.tkinker_import import *
 
+from tkinter.simpledialog import askstring
 #messagbow : showerror, showinfo, showwarning, askyesno, askokcancel ...etc
 title='code erreur:'
 msg="veuillez un un msg"
@@ -27,4 +28,8 @@ def show_cancel_yes_no(title = title, msg = msg):
 
 def show_ok_cancel(title= title, msg = msg):
 	response = messagebox.askokcancel(title, msg)
+	return response
+
+def show_ask_string(title= title, msg = msg):
+	response = askstring(title, msg)
 	return response

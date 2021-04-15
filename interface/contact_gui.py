@@ -97,29 +97,29 @@ class ContactGui:
                 self.TButton2_tooltip = \
                 ToolTip(self.TButton2, self.tooltip_font, '''Ajouter photo de profil''')
 
-                self.TButton2_1 = ttk.Button(self.Labelframe2)
-                self.TButton2_1.place(relx=0.368, rely=0.698, height=22, width=124
+                self.save_edit_btn = ttk.Button(self.Labelframe2)
+                self.save_edit_btn.place(relx=0.368, rely=0.698, height=22, width=124
                         , bordermode='ignore')
-                self.TButton2_1.configure(takefocus="")
-                self.TButton2_1.configure(text='''Enrégistrer''')
+                self.save_edit_btn.configure(takefocus="")
+                self.save_edit_btn.configure(text='''Enrégistrer''')
                 self.tooltip_font = "TkDefaultFont"
-                self.TButton2_1_tooltip = \
-                ToolTip(self.TButton2_1, self.tooltip_font, '''Enrégistrer les modifications effectuées ''')
+                self.save_edit_btn_tooltip = \
+                ToolTip(self.save_edit_btn, self.tooltip_font, '''Enrégistrer les modifications effectuées ''')
 
-                self.TButton2_2 = ttk.Button(self.Labelframe2)
-                self.TButton2_2.place(relx=0.083, rely=0.698, height=22, width=124
+                self.delete_contact_btn = ttk.Button(self.Labelframe2)
+                self.delete_contact_btn.place(relx=0.083, rely=0.698, height=22, width=124
                         , bordermode='ignore')
-                self.TButton2_2.configure(takefocus="")
-                self.TButton2_2.configure(text='''Supprimier''')
+                self.delete_contact_btn.configure(takefocus="")
+                self.delete_contact_btn.configure(text='''Supprimier''')
                 self.tooltip_font = "TkDefaultFont"
-                self.TButton2_2_tooltip = \
-                ToolTip(self.TButton2_2, self.tooltip_font, '''Supprimer le contact de la liste''')
+                self.delete_contact_btn_tooltip = \
+                ToolTip(self.delete_contact_btn, self.tooltip_font, '''Supprimer le contact de la liste''')
 
-                self.TButton2_1_1 = ttk.Button(self.Labelframe2)
-                self.TButton2_1_1.place(relx=0.367, rely=0.842, height=22, width=124
+                self.add_contact_btn = ttk.Button(self.Labelframe2)
+                self.add_contact_btn.place(relx=0.367, rely=0.842, height=22, width=124
                         , bordermode='ignore')
-                self.TButton2_1_1.configure(takefocus="")
-                self.TButton2_1_1.configure(text='''Ajouter nouveau''', command=pop_menu)
+                self.add_contact_btn.configure(takefocus="")
+                self.add_contact_btn.configure(text='''Ajouter nouveau''', command=pop_menu)
                 self.tooltip_font = "TkDefaultFont"
-                self.TButton2_1_1_tooltip = \
-                ToolTip(self.TButton2_1_1, self.tooltip_font, '''ajouter un nouveau contact''')
+                self.add_contact_btn_tooltip = \
+                ToolTip(self.add_contact_btn, self.tooltip_font, '''ajouter un nouveau contact''')

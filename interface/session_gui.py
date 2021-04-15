@@ -1,17 +1,10 @@
 import sys
+from interface.tkinker_import import *
 
-try:
-    import Tkinter as tk
-except ImportError:
-    import tkinter as tk
+from . import login_gui
 
-try:
-    import ttk
-    py3 = False
-except ImportError:
-    import tkinter.ttk as ttk
-    py3 = True
-
+from . import interface
+from . import login_gui
 
 class SessionGui:
     def __init__(self, top):
@@ -33,10 +26,14 @@ class SessionGui:
         self.username_label.configure(activebackground="#f9f9f9")
         self.username_label.configure(font="-family {gothic} -size 12")
         self.username_label.configure(justify='left', relief="sunken")
-        self.username_label.configure(text='''BorisBob''')
+        self.username_label.configure(text=f'{login_gui.session_username}')
 
         self.logout_btn = tk.Button(self.session_frame)
         self.logout_btn.place(relx=0.029, rely=0.647, height=25, width=120
                 , bordermode='ignore')
         self.logout_btn.configure(font="-family {gothic} -size 12")
-        self.logout_btn.configure(text='''Deconnecter''')
+        self.logout_btn.configure(text='''Deconnecter''', command=self._logout)
+
+    def _logout(self):
+        interface.main_destroy()
+        login_gui.login_gui_launcher()

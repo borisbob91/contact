@@ -2,17 +2,19 @@
 import sqlite3
 
 from interface.message_box import  show_error, show_info
+import base64
 
-db_root = 'models/contact.db'
+import config
+
 
 class UserModel:
-	def __init__(self, username, password, secret= None):
+	def __init__(self, username, password=None, secret= None):
 		self._username = username
 		self._password = password
 		self._secret  = secret
 
 	def __set_user(self):
-		db = sqlite3.Connection(db_root)
+		db = sqlite3.Connection(config.db_root)
 		cursor = db.cursor()
 		new_user = ( self._username, self._password, self._secret )
 		req = '''INSERT INTO t_user(t_user_name, t_user_passe, t_user_secret) 
@@ -21,12 +23,10 @@ class UserModel:
 		db.commit()
 		db.close()
 		
-		
-
 
 	def __user_verification(self):
 
-		db = sqlite3.Connection(db_root)
+		db = sqlite3.Connection(config.db_root)
 		cursor = db.cursor()
 		req = '''SELECT t_user_name FROM t_user WHERE t_user_name = ? '''
 		user_input_data = (self._username,)
@@ -51,24 +51,59 @@ class UserModel:
 
 
 	def user_validator(self):
-		self._get_user()
+		user_and_pass = ''
+		user = self.__user_verification()
+		if not user:
+			show_error("Error", f'Le Nom saisie l\'exite pas')
+		else:
+			user_and_pass = self._get_user()
+	
+		return {'user': user_and_pass}
 
 
 	def _get_user(self):
-		import sqlite3
-		db = sqlite3.Connection(db_root)
+
+		db = sqlite3.Connection(config.db_root)
 		cursor = db.cursor()
 		req = '''SELECT t_user_name, t_user_passe FROM t_user WHERE t_user_name = ? AND t_user_passe = ?'''
 		user_input_data = (self._username, self._password )
 		cursor.execute(req, user_input_data)
-		resultat =cursor.fetchone()
+		resultat = cursor.fetchone()
 		db.close()
 
-		if resultat != 0:
-			find = 1
-		else:
-			find = 0
-		
-		return find
+		return resultat
 
-		
+	def user_is_valide(self):
+		resultat = self.__user_verification()
+
+		return resultat
+
+	def __reset_pass_qeury(self, old_secret):
+		db = sqlite3.Connection(config.db_root)
+		cursor = db.cursor()
+		req = '''SELECT * FROM t_user WHERE t_user_name = ? AND t_user_secret = ?'''
+		user_input_data = (self._username, old_secret )
+		cursor.execute(req, user_input_data)
+		resultat = cursor.fetchone()
+		db.close()
+
+		return resultat
+
+	def reset_password_validate(self, oldpass):
+		resultat = self.__reset_pass_qeury(oldpass)
+		if resultat:
+			return resultat
+		else:
+			return None
+
+
+class ContactModel:
+	def __init__(self, nom, prenoms, numero, photo):
+		self.nom = nom
+		self.prenoms = prenoms
+		self.numero = numero
+		self.photo = photo
+
+	def _add_contact(self):
+		pass
+	

@@ -7,13 +7,13 @@ from .support import *
 from .tooltip import ToolTip
 #from .interface import Interface
 from interface.interface import main_laucnher
-from interface.message_box import (show_warming, show_yes_no, 
-                                    show_error)
+from interface.message_box import (show_warming, show_info, 
+                                    show_error, show_ask_string)
 from interface.about_gui import about_gui_launcher
 
 from models import UserModel
 
-username = ''
+session_username = 'BotUser'
 
 class LoginSignup:
     _password = ''
@@ -97,7 +97,7 @@ class LoginSignup:
         self.forget_pass_btn.configure(font="-family {courier 10 pitch} -size 13")
         self.forget_pass_btn.configure(foreground="#ff333a")
         self.forget_pass_btn.configure(relief="groove")
-        self.forget_pass_btn.configure(text='''Passe oublié''')
+        self.forget_pass_btn.configure(text='''Passe oublié''', command= self._reset_password)
 
         self.login_btn = tk.Button(self.Labelframe1)
         self.login_btn.place(relx=0.147, rely=0.83, height=35, width=160
@@ -212,15 +212,18 @@ class LoginSignup:
             pass_value = self.password_entry.get()
             username_value = self.username_entry.get()
             #print(username_value,' : ',pass_value)
-            
-            LoginSignup._password = pass_value
-            LoginSignup._username = username_value
-            username = LoginSignup._username
-            if LoginSignup._username == 'boris' and LoginSignup._password  == 'leponge':
+
+            user_input = UserModel(username_value, pass_value)
+            data_user = user_input.user_validator()
+
+            if data_user['user'] != None:
+                global session_username
+                session_username = data_user['user'][0]
+                
                 login_destry()
                 main_laucnher()
             else:
-                erro_title = 'Informations Incorrecte'
+                erro_title = 'Login Error'
                 error_msg='Les identifiants saisies sont incorrectes'
                 show_error(erro_title, error_msg)
         else:
@@ -232,13 +235,13 @@ class LoginSignup:
 
         if len(self.nw_username_entry.get()) > LoginSignup._login_min and \
         len(self.nw_password_entry.get()) > LoginSignup._login_min and \
-        len(self.secret_entry.get()) > 4 :
+        len(self.secret_entry.get()) >= 4 :
             username_value = self.nw_username_entry.get()
             pass_value = self.nw_password_entry.get()
             secret_value = self.secret_entry.get()
             print(username_value,pass_value,secret_value)
 
-            new_user = UserModel(username_value, pass_value, secret_value)
+            new_user = UserModel(username_value.lower(), pass_value, secret_value)
 
             req = new_user.add_user()
             
@@ -252,6 +255,27 @@ class LoginSignup:
             erro_title = 'Attentions'
             error_msg='Veuillez remplir les champs ci-dessous'
             show_warming(erro_title, error_msg)
+
+    def _reset_password(self):
+        username_value = self.username_entry.get()
+
+        user = UserModel(username_value.lower())
+        
+        if len(username_value) > 3 :
+            if user.user_is_valide():
+                response = show_ask_string('Reinitialisation de passe', 'veuillez entre le "secret" lors de la creation de votre compte')
+                validate = user.reset_password_validate(response)
+                if validate:
+                    show_info('Login data', f'Vos Information de connexion \n Username: {validate[1]} \n PassWord: {validate[2]} \
+                         \n Vous pouvez vous connecter !')
+                else:
+                    show_warming('Erreur de donnée', 'Le secret saisie n\'est pas le bon! \n Essayer à nouveau !')
+
+            else:
+                show_warming('Erreur de donnée', 'Veuillez entre un nom d\'utisateur correcte avant de reinitialiser le mot de passe !')
+        else:
+            show_warming('Alerte', 'Veuillez entre un nom d\'utisateur correcte avant de reinitialiser le mot de passe !')
+
 
 def login_gui_launcher():
     global app
