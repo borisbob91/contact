@@ -3,6 +3,7 @@ from interface.tkinker_import import *
 from interface.support import *
 
 from interface.message_box import show_info 
+from argparse import FileType
 
 class PopMenu:
     def __init__(self, top):
@@ -44,8 +45,6 @@ class PopMenu:
         self.name_entry.place(relx=0.326, rely=0.098, height=27, relwidth=0.535)
         self.name_entry.configure(background="white")
         self.name_entry.configure(font="-family {gothic} -size 12")
-        global c_name_value
-        c_name_value = self.name_entry.get()
 
         self.Entry1_1 = tk.Entry(top)
         self.Entry1_1.place(relx=0.326, rely=0.229, height=27, relwidth=0.535)
@@ -65,13 +64,13 @@ class PopMenu:
         self.Button1 = ttk.Button(top)
         self.Button1.place(relx=0.448, rely=0.866, height=25, width=140)
         self.Button1.configure(text='''Valider''')
-        self.Button1.configure(command = add_contact)
+        self.Button1.configure(command = self._add_contact)
 
         self.Button2 = tk.Button(top)
         self.Button2.place(relx=0.087, rely=0.61, height=25, width=90)
         self.Button2.configure(cursor="fleur")
         self.Button2.configure(font="-family {gothic} -size 12")
-        self.Button2.configure(text='''Photo''')
+        self.Button2.configure(text='''Photo''', command=self._get_photo)
 
         self.Button3 = tk.Button(top)
         self.Button3.place(relx=0.093, rely=0.872, height=25, width=110)
@@ -84,20 +83,33 @@ class PopMenu:
         self.Label2.configure(relief="ridge")
         self.Label2.configure(text='''Label''')
 
-        def _add_contact(self):
-            print('contact added', c_name_value)
-            show_info('info', 'contact data')
+    def _add_contact(self):
+        c_name_value = self.name_entry.get()
+        c_last_name = self.prenoms_entry.get()
+        c_number = self.numero_entry.get()
+        global c_photo
+        c_photo = ''
 
-def add_contact():
-    print('contact added', c_name_value)
-    show_info('info', 'contact data')
+        show_info('info', f'contact data {c_name_value, c_photo}')
+        pop.mainloop()
+
+    def _get_photo(self):
+        c_photo = filedialog.askopenfile(parent= pop ,initialdir="/", title = 'select photo', \
+            filetypes=(("photo png", "*.png"), ("photo jpg", "*.jpg"), ("photo gif", ".gif") ) )
+
+    def  select_photo(self):
+        self._get_photo()
 
 
-def pop_menu():
+def pop_menu_launcher():
+        global pop 
         pop = tk.Toplevel()
-
         pop_menu = PopMenu(pop)
-        
+        pop.mainloop()
+
+def pop_menu_destroy():
+    pop.destroy()
+
 if __name__ == '__main__':
 
     pop_menu()

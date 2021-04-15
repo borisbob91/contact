@@ -10,7 +10,7 @@ from interface.session_gui import SessionGui
 from interface.Search_gui import SearchGui
 from interface.contact_list_gui import ContactListGui
 
-from interface.pop.add_contact_gui import pop_menu
+from interface.pop.add_contact_gui import pop_menu_launcher
 
 from interface.about_gui import about_gui_launcher
 
@@ -68,7 +68,7 @@ class Interface:
         self.sub_menu2 = tk.Menu(top, tearoff=0)
         self.menubar.add_cascade(menu=self.sub_menu2, activebackground=_active_bg,  activeforeground=_active_ft,
                 label='Edition')
-        self.sub_menu2.add_command(label="Ajouter", command=pop_menu)
+        self.sub_menu2.add_command(label="Ajouter", command=pop_menu_launcher)
         self.sub_menu2.add_command(label="Supprimer")
         self.sub_menu2.add_command(label="Modifier")
 

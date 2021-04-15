@@ -104,6 +104,9 @@ class ContactModel:
 		self.numero = numero
 		self.photo = photo
 
-	def _add_contact(self):
-		pass
+	def __get_contact_query(self):
+		
+		req ='''SELECT * FROM t_repertoire
+				CROSS JOIN t_user 	
+				WHERE t_repertoire.t_user_id = t_user.id AND t_user.id = 1 '''
 	

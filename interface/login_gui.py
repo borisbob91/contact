@@ -213,7 +213,7 @@ class LoginSignup:
             username_value = self.username_entry.get()
             #print(username_value,' : ',pass_value)
 
-            user_input = UserModel(username_value, pass_value)
+            user_input = UserModel(username_value.lower(), pass_value)
             data_user = user_input.user_validator()
 
             if data_user['user'] != None:
@@ -239,7 +239,6 @@ class LoginSignup:
             username_value = self.nw_username_entry.get()
             pass_value = self.nw_password_entry.get()
             secret_value = self.secret_entry.get()
-            print(username_value,pass_value,secret_value)
 
             new_user = UserModel(username_value.lower(), pass_value, secret_value)
 

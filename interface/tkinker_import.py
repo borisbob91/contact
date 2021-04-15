@@ -11,8 +11,10 @@ try:
     import Tkinter
 
     from Tkinter import  messagebox
+    from Tkinter import filedialog
 except ImportError:
     import tkinter as tk
     import tkinter
 
     from tkinter import  messagebox
+    from tkinter import filedialog
