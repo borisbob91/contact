@@ -56,12 +56,12 @@ class UserModel:
 		if not user:
 			show_error("Error", f'Le Nom saisie l\'exite pas')
 		else:
-			user_and_pass = self._get_user()
+			user_and_pass = self.__get_user()
 	
 		return {'user': user_and_pass}
 
 
-	def _get_user(self):
+	def __get_user(self):
 
 		db = sqlite3.Connection(config.db_root)
 		cursor = db.cursor()
@@ -72,6 +72,33 @@ class UserModel:
 		db.close()
 
 		return resultat
+
+	def __get_user_id(self):
+		resultat = None
+		try:
+			db = sqlite3.Connection(config.db_root)
+			cursor = db.cursor()
+			req = '''SELECT id FROM t_user WHERE t_user_name = ?'''
+			user_session = (self._username, )
+			cursor.execute(req, user_session)
+
+		except Exception as e:
+			db.close()
+			print('erreur db:', e)
+		else:
+			resultat = list(cursor.fetchone())
+			db.close()
+
+		return resultat
+
+	@property
+	def get_id(self):
+		qs = self.__get_user_id()
+		if qs != None:
+			return qs
+		else:
+			return 0
+
 
 	def user_is_valide(self):
 		resultat = self.__user_verification()
@@ -96,9 +123,10 @@ class UserModel:
 		else:
 			return None
 
+
 class ContactModel:
 	def __init__(self, nom: str, prenoms: str , numero:str, photo: str, user_id: int):
-		assert nom.isalpha(), '''Le nom doit etre en caractere'''
+		assert nom.isalnum(), '''Le nom doit etre en caractere'''
 
 		self._contact_name = nom
 		self._contact_lastname = prenoms
@@ -123,11 +151,11 @@ class ContactModel:
 			
 		except Exception as e:
 			db.rollback()
-			print('erreur:', e)
+			print('erreur d\'ajouter contact:', e)
 		else:
 			db.commit()
 			db.close()
-			print('db closed')
+			print('données enrégistrées et db fermé !')
 
 	def save(self):
 		if len(self._contact_name) > 0 and len(self._contact_number) > 0 and self._user_id > 0:
@@ -136,28 +164,32 @@ class ContactModel:
 		else:
 			return 0
 
-
-	def __name_checker(self) -> tuple:
+	def __name_checker(self):
 
 		db = sqlite3.Connection(config.db_root)
 		cursor = db.cursor()
-		req = "SELECT c_name FROM t_repertoire WHERE c_name = ? "
-		user_to_check = self._contact_name
-		cursor.execute(req, (user_to_check,))
+		req = "SELECT c_name FROM t_repertoire WHERE c_name = ? and t_user_id = ? "
+		user_to_check = (self._contact_name, self._user_id)
+		cursor.execute(req, user_to_check)
 		resultat = cursor.fetchone()
 		db.close()
 
 		return resultat
 
-	def __number_checker(self) -> tuple:
+	def __number_checker(self):
+		try:
 
-		db = sqlite3.Connection(config.db_root)
-		cursor = db.cursor()
-		req = "SELECT c_numero FROM t_repertoire WHERE c_numero = ? "
-		to_check = self._contact_number
-		cursor.execute(req, (to_check,))
-		resultat = cursor.fetchone()
-		db.close()
+			db = sqlite3.Connection(config.db_root)
+			cursor = db.cursor()
+			req = "SELECT c_numero FROM t_repertoire WHERE c_numero = ? and t_user_id = ?"
+			to_check = (self._contact_number,self._user_id)
+			cursor.execute(req, to_check)
+		except Exception as e:
+			db.rollback()
+			print('erreur db', e)
+		else:
+			resultat = cursor.fetchone()
+			db.close()
 
 		return resultat
 
@@ -183,6 +215,10 @@ class ContactModel:
 
 		return resultat
 
+	
+	def set_id(self, c_id):
+		self._user_id = c_id
+
 	@property
 	def get_last_id(self):
 		resultat = list(self.__get_id())
@@ -193,6 +229,10 @@ class ContactModel:
 		return self._contact_name
 
 	@property
+	def get_full_name(self):
+		return str(self._contact_name)+' '+ str(self._contact_lastname)
+
+	@property
 	def get_number(self):
 		return self._contact_number
 
@@ -200,6 +240,9 @@ class ContactModel:
 	def get_photo(self):
 		return self._contact_photo_name
 
+	@property
+	def get_user_id(self):
+		return self._user_id
 
 
 

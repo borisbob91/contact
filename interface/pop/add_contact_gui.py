@@ -2,16 +2,20 @@
 
 from PIL import Image, ImageTk
 
+from interface import login_gui
+
 from interface.tkinker_import import *
 from interface.support import *
 
-from models.models import ContactModel
-from interface.message_box import show_info
+from interface.message_box import show_info, show_warming
 
-from interface import login_gui
+from models.models import ContactModel, UserModel
+
 import config
 
 class PopMenu:
+    default_img = 'img'
+    default_img_extention = 'png'
     load_photo = None
     def __init__(self, top):
         _app_widht  = 912
@@ -93,49 +97,66 @@ class PopMenu:
         c_name_value         = self.name_entry.get()
         c_last_name_value    = self.prenoms_entry.get()
         c_number_value       = self.numero_entry.get()
-        c_photo              = PopMenu.load_photo
-        user_id = 1
+        c_photo              = PopMenu.default_img
+        user_id = 0
 
         if len(c_name_value) >= 2 and len(c_number_value) >= 3 :
 
             NewContact = ContactModel(nom =c_name_value, prenoms = c_last_name_value, \
                 numero=c_number_value, photo= c_photo, user_id=user_id)
 
-            if c_photo != None:
-
+            if PopMenu.load_photo != None :
                 last_id = NewContact.get_last_id
                 NewContact.set_photo(f'img_{last_id + 1}')
 
-            validate = NewContact.contact_validator()
+            session_id_name = login_gui.session_username
 
-            if validate.get('name') or validate.get('number'):
+            if session_id_name != 'BotUser':
+                user_session = UserModel(session_id_name)
+                user_session_id = user_session.get_id[0]
+                NewContact.set_id(user_session_id)
 
-                if validate.get('name'):
-                    show_info('error', 'Le nom entré exite déja :')
-                else :
-                    show_info('error', 'Le numero entré exite déja :')
+                assert NewContact.get_user_id > 0, """ Attention vous etes pas connecté"""
+                
+                validate = NewContact.contact_validator()
 
-            else:
-                print('on continue l\'enregistrement ici')
-                print(f'nom :{NewContact.get_name} number: {NewContact.get_number} photo: {NewContact.get_photo}\
-                    sessionId: {login_gui.session_username} sId: {user_id}')
+                if validate.get('name') or validate.get('number'):
 
-                sessionId = login_gui.session_username
-                if sessionId != 'BotUser':
-                    #get user id
-                    NewContact.save()
-                    print('saved !')
+                    if validate.get('name'):
+                        show_info('error', 'Le nom entré exite déja :')
+                    else :
+                        show_info('error', 'Le numero entré exite déja :')
+
                 else:
-                    print('not ready to save')
+                    print('on continue l\'enregistrement ici')
 
+                    if NewContact.get_user_id > 0:
 
+                        contact_saved = NewContact.save()
 
+                        if contact_saved :
+                            if PopMenu.load_photo != None:
+
+                                photo_name = NewContact.get_photo
+                                extention  = PopMenu.default_img_extention
+
+                                if self.__save_user_photo(photo_name, extention) :
+                                    show_info('Info','Le contact a bien été ajouté et enregistré avec photo')
+                                else:
+                                    print('info','impossible d\'ajouter la photo')
+                            else:
+                                show_info('info', 'contact ajouter mais photo no spécifiée ')
+                        else:
+                            show_warming('info', 'le contact n\'a pas pu être ajouté')
+
+                        print('saved !')
+            else:
+                show_warming('Attentions', 'Vous devez être "connecté"  avant d\'avnant d\'ajouter un contact')
         else:
             show_info('error', 'veuillez fournit au moin un nom et numero ')
-            pop.mainloop()
+            #pop.mainloop()
 
-
-        pop.mainloop()
+        #pop.mainloop()
 
     def __get_photo(self):
         path_photo = filedialog.askopenfilename(parent = pop ,initialdir="/", title = 'select photo', \
@@ -148,10 +169,19 @@ class PopMenu:
         if PopMenu.load_photo != None:
             self.__show_photo()
             
-    def __save_user_photo(self, photo_path, file_name = '1'):
-        imag_file = Image.open(photo_path)
-        imag_file = imag_file.convert('RGB')
-        imag_file.save((f'{config.IMAGES_DIR}/img_{file_name}.png'))
+    def __save_user_photo(self,  file_name, extention):
+        try:
+            imag_file = Image.open(PopMenu.load_photo)
+
+        except Exception as e:
+            print('erreur d\'ouverture image: ',e)
+            return 0
+
+        else:
+            imag_file = imag_file.convert('RGB')
+            imag_file.save((f'{config.IMAGES_DIR}/{file_name}.{extention}'))
+            return 1
+
 
     def __show_photo(self):
         global img

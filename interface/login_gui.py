@@ -3,7 +3,6 @@
 
 from .tkinker_import import *
 from .support import *
-
 from .tooltip import ToolTip
 #from .interface import Interface
 from interface.interface import main_laucnher
