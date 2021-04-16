@@ -1,10 +1,14 @@
-from interface.tkinker_import import *
+#coding: utf-8
 
-from interface.support import *
-from models.models import ContactModel
-from interface.message_box import show_info 
 from PIL import Image, ImageTk
-import base64
+
+from interface.tkinker_import import *
+from interface.support import *
+
+from models.models import ContactModel
+from interface.message_box import show_info
+
+from interface import login_gui
 import config
 
 class PopMenu:
@@ -89,25 +93,41 @@ class PopMenu:
         c_name_value         = self.name_entry.get()
         c_last_name_value    = self.prenoms_entry.get()
         c_number_value       = self.numero_entry.get()
-        c_photo              = ''
+        c_photo              = PopMenu.load_photo
+        user_id = 1
 
         if len(c_name_value) >= 2 and len(c_number_value) >= 3 :
 
-            NewContact = ContactModel(nom =c_name_value, prenoms = c_last_name_value, numero=c_number_value, photo= c_photo)
+            NewContact = ContactModel(nom =c_name_value, prenoms = c_last_name_value, \
+                numero=c_number_value, photo= c_photo, user_id=user_id)
 
-            if PopMenu.load_photo != None:
-                last_id = list(NewContact.get_last_id())
-                last_id = last_id[0]
+            if c_photo != None:
+
+                last_id = NewContact.get_last_id
                 NewContact.set_photo(f'img_{last_id + 1}')
 
             validate = NewContact.contact_validator()
+
             if validate.get('name') or validate.get('number'):
+
                 if validate.get('name'):
                     show_info('error', 'Le nom entré exite déja :')
                 else :
                     show_info('error', 'Le numero entré exite déja :')
+
             else:
                 print('on continue l\'enregistrement ici')
+                print(f'nom :{NewContact.get_name} number: {NewContact.get_number} photo: {NewContact.get_photo}\
+                    sessionId: {login_gui.session_username} sId: {user_id}')
+
+                sessionId = login_gui.session_username
+                if sessionId != 'BotUser':
+                    #get user id
+                    NewContact.save()
+                    print('saved !')
+                else:
+                    print('not ready to save')
+
 
 
         else:
@@ -118,7 +138,7 @@ class PopMenu:
         pop.mainloop()
 
     def __get_photo(self):
-        path_photo = filedialog.askopenfilename(parent= pop ,initialdir="/", title = 'select photo', \
+        path_photo = filedialog.askopenfilename(parent = pop ,initialdir="/", title = 'select photo', \
             filetypes=(("photo png", "*.png"), ("photo jpg", "*.jpg"), ("photo gif", ".gif"),("photo jpeg", "*.jpeg") ) )
         PopMenu.load_photo = path_photo
 

@@ -97,19 +97,47 @@ class UserModel:
 			return None
 
 class ContactModel:
-	def __init__(self, nom, prenoms , numero, photo ):
+	def __init__(self, nom: str, prenoms: str , numero:str, photo: str, user_id: int):
+		assert nom.isalpha(), '''Le nom doit etre en caractere'''
+
 		self._contact_name = nom
 		self._contact_lastname = prenoms
 		self._contact_number = numero
 		self._contact_photo_name = photo
+		self._user_id = user_id
 
 	def __get_contact_query(self):
 		
 		req ='''SELECT * FROM t_repertoire
 				CROSS JOIN t_user 	
 				WHERE t_repertoire.t_user_id = t_user.id AND t_user.id = 1 '''
+	
+	def __set_contact(self):
+		try:
+			db = sqlite3.Connection(config.db_root)
+			cursor = db.cursor()
+			new_contact = ( self._contact_name, self._contact_lastname, self._contact_number, self._contact_photo_name, self._user_id )
+			req = '''INSERT INTO t_repertoire(c_name, c_prenoms, c_numero, c_photo, t_user_id) 
+				VALUES (?, ?, ?, ?, ?)'''
+			cursor.execute(req, new_contact)
+			
+		except Exception as e:
+			db.rollback()
+			print('erreur:', e)
+		else:
+			db.commit()
+			db.close()
+			print('db closed')
 
-	def __name_checker(self):
+	def save(self):
+		if len(self._contact_name) > 0 and len(self._contact_number) > 0 and self._user_id > 0:
+			self.__set_contact()
+			return 1
+		else:
+			return 0
+
+
+	def __name_checker(self) -> tuple:
 
 		db = sqlite3.Connection(config.db_root)
 		cursor = db.cursor()
@@ -121,7 +149,7 @@ class ContactModel:
 
 		return resultat
 
-	def __number_checker(self):
+	def __number_checker(self) -> tuple:
 
 		db = sqlite3.Connection(config.db_root)
 		cursor = db.cursor()
@@ -133,7 +161,6 @@ class ContactModel:
 
 		return resultat
 
-
 	def contact_validator(self) -> dict:
 		
 		check_name = self.__name_checker()
@@ -141,12 +168,12 @@ class ContactModel:
 		check_number = self.__number_checker()
 
 		return {'name': check_name , 'number': check_number}
-
 	
 	def set_photo(self, photo_name):
 		self._contact_photo_name = photo_name
-
-	def get_last_id(self):
+		
+	
+	def __get_id(self):
 		db = sqlite3.Connection(config.db_root)
 		cursor = db.cursor()
 		req = '''SELECT id FROM t_repertoire ORDER By id DESC'''
@@ -155,6 +182,24 @@ class ContactModel:
 		db.close()
 
 		return resultat
+
+	@property
+	def get_last_id(self):
+		resultat = list(self.__get_id())
+		return resultat[0]
+
+	@property
+	def get_name(self):
+		return self._contact_name
+
+	@property
+	def get_number(self):
+		return self._contact_number
+
+	@property
+	def get_photo(self):
+		return self._contact_photo_name
+
 
 
 
