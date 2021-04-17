@@ -86,7 +86,7 @@ class UserModel:
 			db.close()
 			print('erreur db:', e)
 		else:
-			resultat = list(cursor.fetchone())
+			resultat = tuple(cursor.fetchone())
 			db.close()
 
 		return resultat
@@ -210,7 +210,7 @@ class ContactModel:
 		cursor = db.cursor()
 		req = '''SELECT id FROM t_repertoire ORDER By id DESC'''
 		cursor.execute(req)
-		resultat = list(cursor.fetchone())
+		resultat = tuple(cursor.fetchone())
 		db.close()
 
 		return resultat
@@ -221,7 +221,7 @@ class ContactModel:
 
 	@property
 	def get_last_id(self):
-		resultat = list(self.__get_id())
+		resultat = tuple(self.__get_id())
 		return resultat[0]
 
 	@property

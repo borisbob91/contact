@@ -1,16 +1,12 @@
 #coding: utf-8
 
 from PIL import Image, ImageTk
-
-from interface import login_gui
-
 from interface.tkinker_import import *
 from interface.support import *
-
+from interface import login_gui
 from interface.message_box import show_info, show_warming
-
 from models.models import ContactModel, UserModel
-
+from myutils import image_resize
 import config
 
 class PopMenu:
@@ -171,15 +167,25 @@ class PopMenu:
             
     def __save_user_photo(self,  file_name, extention):
         try:
-            imag_file = Image.open(PopMenu.load_photo)
+            image_file = PopMenu.load_photo
+            image = Image.open(image_file)
 
         except Exception as e:
             print('erreur d\'ouverture image: ',e)
             return 0
 
         else:
-            imag_file = imag_file.convert('RGB')
-            imag_file.save((f'{config.IMAGES_DIR}/{file_name}.{extention}'))
+            image = image.convert('RGB')
+            width  = (130 / image.size[0])
+            height = (130 / image.size[1])
+            print('before:', "Cwidth:", width, 'Cheight:', height)
+
+            print('before:', "width:", image.size[0], 'height:', image.size[1])
+
+            image = image.resize((150,  200))
+            print("width:", image.size[0], 'height:', image.size[1])
+
+            image.save((f'{config.IMAGES_DIR}/{file_name}.{extention}'))
             return 1
 
 

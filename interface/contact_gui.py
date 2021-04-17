@@ -2,13 +2,12 @@ from interface.tkinker_import import *
 from interface.pop.add_contact_gui import pop_menu_launcher
 
 from .tooltip import ToolTip
+from PIL import Image, ImageTk
 
-from PIL import Image,ImageTk
 import os
 import sys
+from config import BASE_DIR, IMAGES_DIR
 
-File_PATH = os.path.abspath(__file__)
-BASE_DIR = os.path.dirname(File_PATH)
 
 prog_call = sys.argv[0]
 prog_location = os.path.split(prog_call)[0]
@@ -75,10 +74,8 @@ class ContactGui:
                 self.photo_label.configure(relief="ridge")
                 self.photo_label.configure(image = photo)'''
 
-
                 self.photo_contact = tk.Label(self.Labelframe2)
-                photo_location = os.path.join(prog_location,"./images/img.jpg")
-                load = Image.open(photo_location)
+                load = Image.open(f'{IMAGES_DIR}/img.jpg')
                 load.thumbnail((139,155))
 
                 global _img0

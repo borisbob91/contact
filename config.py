@@ -8,10 +8,10 @@ import pathlib
 FILE_PATH = os.path.abspath(__file__)
 BASE_DIR = os.path.dirname(FILE_PATH)
 IMAGES_DIR = os.path.join(BASE_DIR, 'images')
-
-
+DB_ROOT = os.path.join(BASE_DIR, 'models')
 
 db_root = 'models/contact.db'
+
 
 def configure():
 
@@ -27,4 +27,8 @@ def configure():
     from myutils import set_syspath
     set_syspath(absolute_dependencies)
 
+
     return {}
+    
+if __name__ == '__main__':
+    configure()
