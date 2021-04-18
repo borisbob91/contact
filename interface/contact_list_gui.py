@@ -1,7 +1,9 @@
 from interface.tkinker_import import *
 from interface.support import *
 
+from models.models import UserModel
 
+import session_data
 
 
 
@@ -22,13 +24,11 @@ class ContactListGui:
         self.Scrolledlistbox1.configure(highlightcolor="#d9d9d9")
         self.Scrolledlistbox1.configure(selectbackground="blue")
         self.Scrolledlistbox1.configure(selectforeground="white")
+        self.Scrolledlistbox1.bind('<<ListboxSelect>>', self.selected)
 
 
         self.Scrolledlistbox1.insert( 1 , "Bread : 0759188395".center(34, '-') )
-        self.Scrolledlistbox1.insert( 2 , "Milk" )
-        self.Scrolledlistbox1.insert( 3 , "Meat" )
-        self.Scrolledlistbox1.insert( 4 , "Cheese" )
-        self.Scrolledlistbox1.insert( 5 , "Vegetables" )
+
         
 
         self.list_fresh_btn = ttk.Button(self.contact_list_frame)
@@ -63,5 +63,19 @@ class ContactListGui:
         self.TLabel1_1.configure(anchor='w')
         self.TLabel1_1.configure(justify='left')
         self.TLabel1_1.configure(text='''Numéro mobile''')
+        self.show_contact()
+
+    def show_contact(self):
+        current_user = UserModel(session_data.session_username)
+        
+        if current_user.user_is_valide() :
+            contact_list = current_user.get_contact_list()
+            i = 2
+            for contact in contact_list:
+                self.Scrolledlistbox1.insert( i , f"{i} | {contact[1]} {contact[2]} | {contact[3]}")
+                i += 1
+
+    def selected(self):
+        resultat = self.Scrolledlistbox1.selection_get()
 
         

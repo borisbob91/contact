@@ -124,6 +124,31 @@ class UserModel:
 			return None
 
 
+	def __get_contact_query(self):
+		try:
+
+			req ='''SELECT * FROM t_repertoire
+					CROSS JOIN t_user	
+				    WHERE t_repertoire.t_user_id = t_user.id AND t_user.id = ? ORDER BY c_name '''
+
+			id_user = self.get_id
+
+			db = sqlite3.Connection(config.db_root)
+			cursor = db.cursor()
+			cursor.execute(req, id_user)
+		except  Exception as e:
+			print('selection de donnée echoué:', e)
+		else:
+			resultat = cursor.fetchall()
+		finally:
+			db.close()
+
+		return resultat
+
+	def get_contact_list(self):
+
+		return self.__get_contact_query()
+
 class ContactModel:
 	def __init__(self, nom: str, prenoms: str , numero:str, photo: str, user_id: int):
 		assert nom.isalnum(), '''Le nom doit etre en caractere'''
@@ -134,12 +159,7 @@ class ContactModel:
 		self._contact_photo_name = photo
 		self._user_id = user_id
 
-	def __get_contact_query(self):
-		
-		req ='''SELECT * FROM t_repertoire
-				CROSS JOIN t_user 	
-				WHERE t_repertoire.t_user_id = t_user.id AND t_user.id = 1 '''
-	
+
 	def __set_contact(self):
 		try:
 			db = sqlite3.Connection(config.db_root)

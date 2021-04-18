@@ -8,9 +8,9 @@ import os
 import sys
 from config import BASE_DIR, IMAGES_DIR
 
-
 prog_call = sys.argv[0]
 prog_location = os.path.split(prog_call)[0]
+
 
 img = ''
 class ContactGui:

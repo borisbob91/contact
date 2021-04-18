@@ -12,6 +12,8 @@ from interface.about_gui import about_gui_launcher
 
 from models import UserModel
 
+import session_data
+
 session_username = 'BotUser'
 
 class LoginSignup:
@@ -218,7 +220,7 @@ class LoginSignup:
             if data_user['user'] != None:
                 global session_username
                 session_username = data_user['user'][0]
-                
+                session_data.session_username = data_user['user'][0]
                 login_destry()
                 main_laucnher()
             else:

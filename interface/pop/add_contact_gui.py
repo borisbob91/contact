@@ -8,6 +8,7 @@ from interface.message_box import show_info, show_warming
 from models.models import ContactModel, UserModel
 from myutils import image_resize
 import config
+from os import path
 
 class PopMenu:
     default_img = 'img'
@@ -109,10 +110,11 @@ class PopMenu:
 
             if session_id_name != 'BotUser':
                 user_session = UserModel(session_id_name)
-                user_session_id = user_session.get_id[0]
-                NewContact.set_id(user_session_id)
 
-                assert NewContact.get_user_id > 0, """ Attention vous etes pas connecté"""
+                assert user_session.get_id[0] > 0, """ Attention vous êtes pas connecté"""
+
+                NewContact.set_id(user_session.get_id[0])
+
                 
                 validate = NewContact.contact_validator()
 
@@ -144,8 +146,6 @@ class PopMenu:
                                 show_info('info', 'contact ajouter mais photo no spécifiée ')
                         else:
                             show_warming('info', 'le contact n\'a pas pu être ajouté')
-
-                        print('saved !')
             else:
                 show_warming('Attentions', 'Vous devez être "connecté"  avant d\'avnant d\'ajouter un contact')
         else:
@@ -155,7 +155,7 @@ class PopMenu:
         #pop.mainloop()
 
     def __get_photo(self):
-        path_photo = filedialog.askopenfilename(parent = pop ,initialdir="/", title = 'select photo', \
+        path_photo = filedialog.askopenfilename(parent = pop ,initialdir=path.expanduser('~') +'/Images', title = 'select photo', \
             filetypes=(("photo png", "*.png"), ("photo jpg", "*.jpg"), ("photo gif", ".gif"),("photo jpeg", "*.jpeg") ) )
         PopMenu.load_photo = path_photo
 
@@ -209,6 +209,7 @@ def pop_menu_launcher():
 
 def pop_menu_destroy():
     pop.destroy()
+
 
 if __name__ == '__main__':
 
