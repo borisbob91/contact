@@ -33,3 +33,13 @@ def image_resize(image_path: str, img_format:tuple = (130,) ):
 		print('Ooops !')
 
 	return image
+
+
+class SessionData:
+	def __init__(self, session_username,session_password, session_user_id):
+		self.__session_username = session_username
+		self.__session_password = session_password
+		self.__session_user_id = session_user_id
+
+	def get_name(self):
+		pass

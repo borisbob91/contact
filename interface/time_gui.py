@@ -1,5 +1,5 @@
 import sys
-
+import time
 try:
     import Tkinter as tk
 except ImportError:
@@ -11,6 +11,7 @@ try:
 except ImportError:
     import tkinter.ttk as ttk
     py3 = True
+
 
 class TimeGui:
     def __init__(self, top):
@@ -28,4 +29,16 @@ class TimeGui:
         self.time_label.place(relx=0.25, rely=0.413, height=35, width=129)
         self.time_label.configure(activebackground="#f9f9f9")
         self.time_label.configure(font="-family {gothic} -size 14")
-        self.time_label.configure(text='''21:58:21''')
+        #self.time_label.configure(text='''21:58:21''')
+        self.times()
+        
+    def times(self):
+        hour = time.strftime('%H')
+        minute = time.strftime('%M')
+        sec = time.strftime('%S')
+        date = time.strftime('%Y-%m-%d')
+        self.date_label.configure(text=date)
+        self.time_label.configure(text=hour+':'+minute+':'+sec)
+        self.time_label.after(1000, self.times)
+        
+

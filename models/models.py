@@ -1,7 +1,7 @@
 
 import sqlite3
 
-from interface.message_box import  show_error, show_info
+from interface.message_box import  show_error, show_info,show_warming
 import base64
 
 import config
@@ -21,8 +21,7 @@ class UserModel:
 				VALUES (?, ?, ?)'''
 		cursor.execute(req, new_user)
 		db.commit()
-		db.close()
-		
+		db.close()	
 
 	def __user_verification(self):
 
@@ -36,7 +35,6 @@ class UserModel:
 
 		return resultat
 
-
 	def add_user(self):
 		resultat = self.__user_verification()
 		
@@ -48,7 +46,6 @@ class UserModel:
 			show_error("Error", f'Le Nom {resultat[0] } exite déja')
 			req = 0
 		return req
-
 
 	def user_validator(self):
 		user_and_pass = ''
@@ -149,9 +146,25 @@ class UserModel:
 
 		return self.__get_contact_query()
 
+	def checking_data(self):
+		if not self._username.isalnum() or ' ' in self._username :
+			title = 'Attention'
+			msg = "le champ ' Nom ' ne peut contenir d'espace ni de symbole et d'espace "
+			show_warming(title, msg)
+			assert self._username.isalnum(), "Saisie un nom correct"
+		if ' ' in self._password:
+			show_warming('Attention', "le champ 'password' ne peuvent contenir d'espace")
+			assert not ' ' in self._password, "pas d'espace dans le mot de passe"
+		if ' ' in self._secret:
+			show_warming('Attention', "le champ 'secret' ne peuvent contenir d'espace")
+			assert not ' ' in self._secret, ''' pas d'espace dans le secret '''
+
+
+
 class ContactModel:
-	def __init__(self, nom: str, prenoms: str , numero:str, photo: str, user_id: int):
+	def __init__(self, nom: str=None, prenoms: str =None, numero:str = None, photo: str=None, user_id: int=None):
 		assert nom.isalnum(), '''Le nom doit etre en caractere'''
+		assert user_id.isnum() and user_id != None , 'id: <class int>'
 
 		self._contact_name = nom
 		self._contact_lastname = prenoms
@@ -159,6 +172,11 @@ class ContactModel:
 		self._contact_photo_name = photo
 		self._user_id = user_id
 
+	def checking_data(self):
+		if (self._contact_name or self._contact_number):
+			pass
+		else:
+			assert self._contact_name != None or self._contact_number != None, 'Fournit un nom ou Numero' 
 
 	def __set_contact(self):
 		try:
@@ -185,14 +203,19 @@ class ContactModel:
 			return 0
 
 	def __name_checker(self):
-
-		db = sqlite3.Connection(config.db_root)
-		cursor = db.cursor()
-		req = "SELECT c_name FROM t_repertoire WHERE c_name = ? and t_user_id = ? "
-		user_to_check = (self._contact_name, self._user_id)
-		cursor.execute(req, user_to_check)
-		resultat = cursor.fetchone()
-		db.close()
+		try:
+			db = sqlite3.Connection(config.db_root)
+			cursor = db.cursor()
+			req = "SELECT c_name FROM t_repertoire WHERE c_name = ? and t_user_id = ? "
+			user_to_check = (self._contact_name, self._user_id)
+		except Exception as e:
+			db.rollback()
+			print("erreur: ",e)
+		else:
+			cursor.execute(req, user_to_check)
+			resultat = cursor.fetchone()
+		finally:
+			db.close()
 
 		return resultat
 
@@ -263,6 +286,11 @@ class ContactModel:
 	@property
 	def get_user_id(self):
 		return self._user_id
+
+	def search_by_name(self):
+		self.__name_checker()
+
+
 
 
 

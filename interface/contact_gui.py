@@ -15,7 +15,6 @@ prog_location = os.path.split(prog_call)[0]
 img = ''
 class ContactGui:
        
-
         def __init__(self, top):
                 self.Labelframe2 = tk.LabelFrame(top)
                 self.Labelframe2.place(relx=0.329, rely=0.151, relheight=0.43

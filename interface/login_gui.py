@@ -13,6 +13,7 @@ from interface.about_gui import about_gui_launcher
 from models import UserModel
 
 import session_data
+import color
 
 session_username = 'BotUser'
 
@@ -34,7 +35,7 @@ class LoginSignup:
         top.maxsize(1585, 870)
         top.resizable(1,  1)
         top.title("Identification")
-        top.configure(background="#82d8c1")
+        top.configure(background=color.bgColor)
 
         self.menubar = tk.Menu(top,font="TkMenuFont",bg='#8fefd6',fg='#fff')
         top.configure(menu = self.menubar)
@@ -49,13 +50,13 @@ class LoginSignup:
         self.Labelframe1.configure(relief='groove')
         self.Labelframe1.configure(font="-family {gothic} -size 14")
         self.Labelframe1.configure(text='''Connexion''')
-        self.Labelframe1.configure(background="#82d8c1")
+        self.Labelframe1.configure(background=color.bgColor)
 
         self.username_label = tk.Label(self.Labelframe1)
         self.username_label.place(relx=0.07, rely=0.101, height=40, width=182
                 , bordermode='ignore')
         self.username_label.configure(activebackground="#f9f9f9")
-        self.username_label.configure(background="#82d8c1")
+        self.username_label.configure(background=color.bgColor)
         self.username_label.configure(font="-family {gothic} -size 14")
         self.username_label.configure(foreground="#fff")
         self.username_label.configure(relief="groove")
@@ -73,7 +74,7 @@ class LoginSignup:
         self.password_label.place(relx=0.07, rely=0.406, height=40, width=192
                 , bordermode='ignore')
         self.password_label.configure(activebackground="#f9f9f9")
-        self.password_label.configure(background="#82d8c1")
+        self.password_label.configure(background=color.bgColor)
         self.password_label.configure(font="-family {gothic} -size 14")
         self.password_label.configure(foreground="#fff")
         self.password_label.configure(relief="groove")
@@ -93,7 +94,7 @@ class LoginSignup:
         self.forget_pass_btn.place(relx=0.32, rely=0.678, height=25, width=150
                 , bordermode='ignore')
         self.forget_pass_btn.configure(activebackground="#fff")
-        self.forget_pass_btn.configure(activeforeground="#82d8c1")
+        self.forget_pass_btn.configure(activeforeground=color.bgColor)
         self.forget_pass_btn.configure(background="#fff")
         self.forget_pass_btn.configure(font="-family {courier 10 pitch} -size 13")
         self.forget_pass_btn.configure(foreground="#ff333a")
@@ -104,8 +105,8 @@ class LoginSignup:
         self.login_btn.place(relx=0.147, rely=0.83, height=35, width=160
                 , bordermode='ignore')
         self.login_btn.configure(activebackground="#fff")
-        self.login_btn.configure(activeforeground="#82d8c1")
-        self.login_btn.configure(background="#82d8c1")
+        self.login_btn.configure(activeforeground=color.bgColor)
+        self.login_btn.configure(background=color.bgColor)
         self.login_btn.configure(font="-family {courier 10 pitch} -size 13")
         self.login_btn.configure(foreground="#fff")
         self.login_btn.configure(relief="groove")
@@ -119,13 +120,13 @@ class LoginSignup:
         self.Labelframe1_1.configure(relief='groove')
         self.Labelframe1_1.configure(font="-family {gothic} -size 14")
         self.Labelframe1_1.configure(text='''Creation de compte''')
-        self.Labelframe1_1.configure(background="#82d8c1")
+        self.Labelframe1_1.configure(background=color.bgColor)
 
         self.nw_username_label = tk.Label(self.Labelframe1_1)
         self.nw_username_label.place(relx=0.07, rely=0.101, height=37, width=163
                 , bordermode='ignore')
         self.nw_username_label.configure(activebackground="#f9f9f9")
-        self.nw_username_label.configure(background="#82d8c1")
+        self.nw_username_label.configure(background=color.bgColor)
         self.nw_username_label.configure(font="-family {gothic} -size 14")
         self.nw_username_label.configure(foreground="#fff")
         self.nw_username_label.configure(relief="groove")
@@ -143,7 +144,7 @@ class LoginSignup:
         self.nw_pass_label.place(relx=0.07, rely=0.354, height=35, width=173
                 , bordermode='ignore')
         self.nw_pass_label.configure(activebackground="#f9f9f9")
-        self.nw_pass_label.configure(background="#82d8c1")
+        self.nw_pass_label.configure(background=color.bgColor)
         self.nw_pass_label.configure(font="-family {gothic} -size 14")
         self.nw_pass_label.configure(foreground="#fff")
         self.nw_pass_label.configure(relief="groove")
@@ -161,8 +162,8 @@ class LoginSignup:
         self.sinup_btn.place(relx=0.144, rely=0.83, height=35, width=160
                 , bordermode='ignore')
         self.sinup_btn.configure(activebackground="#fff")
-        self.sinup_btn.configure(activeforeground="#82d8c1")
-        self.sinup_btn.configure(background="#82d8c1")
+        self.sinup_btn.configure(activeforeground=color.bgColor)
+        self.sinup_btn.configure(background=color.bgColor)
         self.sinup_btn.configure(font="-family {courier 10 pitch} -size 13")
         self.sinup_btn.configure(foreground="#fff")
         self.sinup_btn.configure(relief="groove")
@@ -172,7 +173,7 @@ class LoginSignup:
         self.secret_label.place(relx=0.081, rely=0.565, height=35, width=173
                 , bordermode='ignore')
         self.secret_label.configure(activebackground="#f9f9f9")
-        self.secret_label.configure(background="#82d8c1")
+        self.secret_label.configure(background=color.bgColor)
         self.secret_label.configure(font="-family {gothic} -size 14")
         self.secret_label.configure(foreground="#fff")
         self.secret_label.configure(relief="groove")
@@ -237,12 +238,16 @@ class LoginSignup:
         if len(self.nw_username_entry.get()) > LoginSignup._login_min and \
         len(self.nw_password_entry.get()) > LoginSignup._login_min and \
         len(self.secret_entry.get()) >= 4 :
+
             username_value = self.nw_username_entry.get()
             pass_value = self.nw_password_entry.get()
             secret_value = self.secret_entry.get()
+            
 
             new_user = UserModel(username_value.lower(), pass_value, secret_value)
 
+            new_user.checking_data()
+            
             req = new_user.add_user()
             
             if req :

@@ -82,16 +82,16 @@ class Interface:
         
 
         """__________________Search templates zone______________________ """
-        self.search_gui = SearchGui(top)
+        self.search_gui = SearchGui(top) # herite de ContactListGui(top)
 
         
         """__________________List contacts templates zone______________________ """
 
-        self.contact_list_gui = ContactListGui(top)
+        #self.contact_list_gui = ContactListGui(top)
 
         """__________________List contacts templates zone______________________ """
   
-        self.contact_gui = ContactGui(top)
+        #self.contact_gui = ContactGui(top)
 
         """__________________List import export templates zone______________________ """
 
