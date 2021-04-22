@@ -2,10 +2,10 @@ from interface.tkinker_import import *
 
 from .tooltip import ToolTip
 from tkinter import *
-
+from .message_box import show_info, show_warming, show_error
 from .contact_list_gui import ContactListGui
-
-
+import session_data
+from models import UserModel
 class SearchGui(ContactListGui):
     
     def __init__(self, top):
@@ -50,19 +50,36 @@ class SearchGui(ContactListGui):
         messagebox.showwarning('Attentions:', "Veuillez entrez une valeur")
 
     def get_search_value(self):
+        global current_user
+        current_user = UserModel(session_data.session_username)
         value_enter = self.search_Entry.get()
-        is_name = self.get_radio_value()
-        print(is_name)
-        if is_name :
-            assert value_enter.isalpha(), 'nom: <class alpha>'
-            self.search_by_name()
-        else:
-            assert value_enter.isnumeric(), 'numeor : <class isnumeric>'
-            self.search_by_number()
 
-        self.clear_list()
-        self.Scrolledlistbox1.insert(1, value_enter)
-        
+        is_name = self.get_radio_value()
+        if is_name :
+            if not value_enter.isalpha():
+                show_warming(title="Erreur", msg='cochez la bonne case de numero')
+                assert value_enter.isalpha(), 'nom: <class alpha>'
+
+            resultat = self.search_by_name(value_enter)
+            self.clear_list()
+            if not len(resultat) > 0 :
+                self.Scrolledlistbox1.insert( 1 , f"Auncun resultat pour {value_enter}!")
+            else:
+                self._show_resultat(resultat)
+        else:
+            if not value_enter.isnumeric():
+                show_warming(title="Erreur", msg='cochez la bonne case de nom')
+                assert value_enter.isnumeric(), 'numero : <class numeric>'
+
+            resultat = self.search_by_number(value_enter)
+            self.clear_list()
+            if not len(resultat) > 0 :
+                self.Scrolledlistbox1.insert( 1 , f"Auncun resultat pour {value_enter}!")
+                    
+            self._show_resultat(resultat)
+
+        return {}
+       
 
     def get_radio_value(self):
         global is_name
@@ -70,8 +87,31 @@ class SearchGui(ContactListGui):
         
         return is_name
 
-    def search_by_name(self):
-        pass
+    def search_by_name(self, word):
+        search_result = current_user.search_contact_by_name(word, 1)
+        
+        return search_result
+        
     
-    def search_by_number(self):
-        pass
+    def search_by_number(self, number):
+        search_result = current_user.search_contact_by_name(number, 0)
+        
+        return search_result
+
+    def _show_resultat(self, query_resultat=None):
+        contact_name = list()
+
+        global resultat_list
+        resultat_list = query_resultat
+        print(resultat_list)
+        i = 1
+        for contact in resultat_list:
+            self.Scrolledlistbox1.insert( i , f"{i}.{contact[1]} {contact[2]}")
+            i += 1
+            contact_name.append(contact[1])
+
+        global contact_dic
+        contact_dic = {name:value for name, value in zip(contact_name,resultat_list)}
+        return {}
+
+

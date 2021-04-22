@@ -125,8 +125,8 @@ class UserModel:
 		try:
 
 			req ='''SELECT * FROM t_repertoire
-					CROSS JOIN t_user	
-				    WHERE t_repertoire.t_user_id = t_user.id AND t_user.id = ? ORDER BY c_name '''
+					INNER JOIN t_user	
+				    ON t_repertoire.t_user_id = t_user.id AND t_user.id = ? ORDER BY c_name '''
 
 			id_user = self.get_id
 
@@ -146,6 +146,47 @@ class UserModel:
 
 		return self.__get_contact_query()
 
+	def __query_search(self, query, table_code):
+		id_user = self.get_id[0] 
+		if id_user > 0 :
+			if table_code == 1:
+
+				try:
+					db = sqlite3.connect(config.db_root)
+					cursor = db.cursor()
+					req_data = (f"{query}%", id_user)
+					req = """ SELECT * FROM t_repertoire  WHERE c_name like ? and t_user_id = ? GROUP BY c_name"""
+					cursor.execute(req, req_data)
+				except Exception as e:
+					print(e)
+
+				else:
+					resultat = cursor.fetchall()
+				finally:
+					db.close()
+
+			elif table_code == 0:
+				try:
+					db = sqlite3.connect(config.db_root)
+					cursor = db.cursor()
+					req_data = (f"{query}%", id_user)
+					req = """ SELECT * FROM t_repertoire  WHERE c_numero like ? and t_user_id = ? GROUP BY c_numero"""
+					cursor.execute(req, req_data)
+				except Exception as e:
+					print(e)
+
+				else:
+					resultat = cursor.fetchall()
+				finally:
+					db.close()
+			else:
+				raise AssertionError ; '''indiquer un table correct'''
+
+		return resultat
+
+	def search_contact_by_name(self, query, table_code):
+		return self.__query_search(query, table_code)
+
 	def checking_data(self):
 		if not self._username.isalnum() or ' ' in self._username :
 			title = 'Attention'
@@ -164,7 +205,7 @@ class UserModel:
 class ContactModel:
 	def __init__(self, nom: str=None, prenoms: str =None, numero:str = None, photo: str=None, user_id: int=None):
 		assert nom.isalnum(), '''Le nom doit etre en caractere'''
-		assert user_id.isnum() and user_id != None , 'id: <class int>'
+		assert user_id.isnum() and user_id != None , 'id: <class int> and required'
 
 		self._contact_name = nom
 		self._contact_lastname = prenoms
@@ -248,7 +289,7 @@ class ContactModel:
 		self._contact_photo_name = photo_name
 		
 	
-	def __get_id(self):
+	def __get_id(self) ->tuple:
 		db = sqlite3.Connection(config.db_root)
 		cursor = db.cursor()
 		req = '''SELECT id FROM t_repertoire ORDER By id DESC'''
@@ -288,7 +329,9 @@ class ContactModel:
 		return self._user_id
 
 	def search_by_name(self):
-		self.__name_checker()
+		pass
+
+
 
 
 

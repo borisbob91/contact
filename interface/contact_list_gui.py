@@ -219,6 +219,7 @@ class ContactListGui:
         end = len(contact_list)
         self.Scrolledlistbox1.delete(1, end)
         self._show_contact()
+        
     def clear_list(self):
         end = len(contact_list)
         self.Scrolledlistbox1.delete(1, end)
