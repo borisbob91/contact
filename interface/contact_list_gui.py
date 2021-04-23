@@ -2,7 +2,7 @@ from interface.tkinker_import import *
 from interface.support import *
 
 from models.models import UserModel
-
+from myutils import Contact_Struct
 import session_data
 
 from config import BASE_DIR, IMAGES_DIR
@@ -11,62 +11,10 @@ from interface.pop.add_contact_gui import pop_menu_launcher
 
 from .tooltip import ToolTip
 from PIL import Image, ImageTk
+from os import path
 
-
-class ContactListGui:
+class ContactInfoGui:
     def __init__(self, top):
-        self.contact_list_frame = tk.LabelFrame(top)
-        self.contact_list_frame.place(relx=0.0, rely=0.151, relheight=0.822
-                , relwidth=0.318)
-        self.contact_list_frame.configure(relief='groove')
-        self.contact_list_frame.configure(text='''Liste de Contacts''')
-
-        self.Scrolledlistbox1 = ScrolledListBox(self.contact_list_frame)
-        self.Scrolledlistbox1.place(relx=0.034, rely=0.075, relheight=0.857
-                , relwidth=0.952, bordermode='ignore')
-        self.Scrolledlistbox1.configure(background="white")
-        self.Scrolledlistbox1.configure(cursor="xterm")
-        self.Scrolledlistbox1.configure(font="TkFixedFont")
-        self.Scrolledlistbox1.configure(highlightcolor="#d9d9d9")
-        self.Scrolledlistbox1.configure(selectbackground=color.bgColor)
-        self.Scrolledlistbox1.configure(selectforeground=color.fontColor)
-        self.Scrolledlistbox1.bind('<<ListboxSelect>>', self.selected)
-        self.Scrolledlistbox1.insert( 0 , "Boris Bob : 0759188395".center(34, '-') )
-
-        self.list_fresh_btn = ttk.Button(self.contact_list_frame)
-        self.list_fresh_btn.place(relx=0.293, rely=0.943, height=22, width=114
-                , bordermode='ignore')
-        self.list_fresh_btn.configure(takefocus="")
-        self.list_fresh_btn.configure(text='''Actualiser''', command= self.refresh_list)
-
-        self.TLabel1 = ttk.Label(self.contact_list_frame)
-        self.TLabel1.place(relx=0.076, rely=0.04, height=13, width=114
-                , bordermode='ignore')
-        self.TLabel1.configure(background="#d9d9d9")
-        self.TLabel1.configure(foreground="#000000")
-        self.TLabel1.configure(font="TkDefaultFont")
-        self.TLabel1.configure(relief="flat")
-        self.TLabel1.configure(anchor='w')
-        self.TLabel1.configure(justify='left')
-        self.TLabel1.configure(text='''Nom & Prénoms''')
-
-        self.TSeparator1 = ttk.Separator(self.contact_list_frame)
-        self.TSeparator1.place(relx=0.49, rely=0.028, relheight=0.051
-                , bordermode='ignore')
-        self.TSeparator1.configure(orient="vertical")
-
-        self.TLabel1_1 = ttk.Label(self.contact_list_frame)
-        self.TLabel1_1.place(relx=0.545, rely=0.04, height=13, width=124
-                , bordermode='ignore')
-        self.TLabel1_1.configure(background="#d9d9d9")
-        self.TLabel1_1.configure(foreground="#000000")
-        self.TLabel1_1.configure(font="TkDefaultFont")
-        self.TLabel1_1.configure(relief="flat")
-        self.TLabel1_1.configure(anchor='w')
-        self.TLabel1_1.configure(justify='left')
-        self.TLabel1_1.configure(text='''Numéro mobile''')
-        self._show_contact()
-
         self.Labelframe2 = tk.LabelFrame(top)
         self.Labelframe2.place(relx=0.329, rely=0.151, relheight=0.43
                 , relwidth=0.658)
@@ -131,7 +79,7 @@ class ContactListGui:
         self.TButton2 = ttk.Button(self.Labelframe2)
         self.TButton2.place(relx=0.68, rely=0.681, height=22, width=124
                         , bordermode='ignore')
-        self.TButton2.configure(text='''Nouvelle photo''')
+        self.TButton2.configure(text='''Nouvelle photo''', command=self.change_photo)
         self.tooltip_font = "TkDefaultFont"
         self.TButton2_tooltip = \
                 ToolTip(self.TButton2, self.tooltip_font, '''Ajouter photo de profil''')
@@ -140,7 +88,7 @@ class ContactListGui:
         self.save_edit_btn.place(relx=0.368, rely=0.698, height=22, width=124
                         , bordermode='ignore')
         self.save_edit_btn.configure(takefocus="")
-        self.save_edit_btn.configure(text='''Enrégistrer''')
+        self.save_edit_btn.configure(text='''Enrégistrer''', command = self.__save_edit)
         self.tooltip_font = "TkDefaultFont"
         self.save_edit_btn_tooltip = \
             ToolTip(self.save_edit_btn, self.tooltip_font, '''Enrégistrer les modifications effectuées ''')
@@ -162,7 +110,126 @@ class ContactListGui:
         self.tooltip_font = "TkDefaultFont"
         self.add_contact_btn_tooltip = \
                 ToolTip(self.add_contact_btn, self.tooltip_font, '''ajouter un nouveau contact''')
+                
+        
+    def _get_selected(self):
+       tmp_selection = contact_getted
+       return tmp_selection
 
+    def __validate_change(self):
+        name = self.Entry_nom.get().lower()
+        last_name = self.Entry_prenoms.get().lower()
+        number = self.Entry_numero.get()
+        photo = ''
+
+        assert name.isalnum(), ''' name :<classe alnum> '''
+        assert last_name.isalnum() or last_name == '', ''' last_name :<classe alnum> '''
+        assert str(number).isnumeric() , ''' numero <class numeric> '''
+
+        if contact_getted.c_nom != name or contact_getted.c_prenoms != last_name or file_img != None :
+            print('modifications')
+
+
+
+    def __get_photo(self):
+        path_photo = filedialog.askopenfilename(initialdir=path.expanduser('~') +'/Images', title = 'select photo', \
+            filetypes=(("photo png", "*.png"), ("photo jpg", "*.jpg"), ("photo gif", ".gif"),("photo jpeg", "*.jpeg") ) )
+
+        return path_photo
+
+    def __show_photo(self):
+        global file_img
+
+        file_img = None
+        global img
+        file_img = self.__get_photo()
+        try:
+            loaded = Image.open(file_img)
+            global loaded_tmp
+            loaded_tmp = loaded
+        except :
+            print('petit probleme')
+        else:
+            loaded.thumbnail((140,150))
+            img = ImageTk.PhotoImage(loaded)
+            self.photo_contact.configure(image = img)
+
+        return loaded
+
+    def change_photo(self):
+        global photo_file
+        photo_file = self.__show_photo()
+        print(photo_file)
+
+    def __save_photo(self, file_name):
+
+        image = loaded_tmp.convert('RGB')
+        image = image.resize((150,  200))
+
+        image.save((f'{config.IMAGES_DIR}/{file_name}.png'))
+
+        return {}
+
+    def __save_edit(self):
+        self.__validate_change()
+
+
+
+class ContactListGui(ContactInfoGui):
+
+    def __init__(self, top):
+        super().__init__(top)
+        self.contact_list_frame = tk.LabelFrame(top)
+        self.contact_list_frame.place(relx=0.0, rely=0.151, relheight=0.822
+                , relwidth=0.318)
+        self.contact_list_frame.configure(relief='groove')
+        self.contact_list_frame.configure(text='''Liste de Contacts''')
+
+        self.Scrolledlistbox1 = ScrolledListBox(self.contact_list_frame)
+        self.Scrolledlistbox1.place(relx=0.034, rely=0.075, relheight=0.857
+                , relwidth=0.952, bordermode='ignore')
+        self.Scrolledlistbox1.configure(background="white")
+        self.Scrolledlistbox1.configure(cursor="xterm")
+        self.Scrolledlistbox1.configure(font="TkFixedFont")
+        self.Scrolledlistbox1.configure(highlightcolor="#d9d9d9")
+        self.Scrolledlistbox1.configure(selectbackground=color.bgColor)
+        self.Scrolledlistbox1.configure(selectforeground=color.fontColor)
+        self.Scrolledlistbox1.bind('<<ListboxSelect>>', self.selected)
+        self.Scrolledlistbox1.insert( 0 , "Boris Bob : 0759188395".center(34, '-') )
+
+        self.list_fresh_btn = ttk.Button(self.contact_list_frame)
+        self.list_fresh_btn.place(relx=0.293, rely=0.943, height=22, width=114
+                , bordermode='ignore')
+        self.list_fresh_btn.configure(takefocus="")
+        self.list_fresh_btn.configure(text='''Actualiser''', command= self.refresh_list)
+
+        self.TLabel1 = ttk.Label(self.contact_list_frame)
+        self.TLabel1.place(relx=0.076, rely=0.04, height=13, width=114
+                , bordermode='ignore')
+        self.TLabel1.configure(background="#d9d9d9")
+        self.TLabel1.configure(foreground="#000000")
+        self.TLabel1.configure(font="TkDefaultFont")
+        self.TLabel1.configure(relief="flat")
+        self.TLabel1.configure(anchor='w')
+        self.TLabel1.configure(justify='left')
+        self.TLabel1.configure(text='''Nom & Prénoms''')
+
+        self.TSeparator1 = ttk.Separator(self.contact_list_frame)
+        self.TSeparator1.place(relx=0.49, rely=0.028, relheight=0.051
+                , bordermode='ignore')
+        self.TSeparator1.configure(orient="vertical")
+
+        self.TLabel1_1 = ttk.Label(self.contact_list_frame)
+        self.TLabel1_1.place(relx=0.545, rely=0.04, height=13, width=124
+                , bordermode='ignore')
+        self.TLabel1_1.configure(background="#d9d9d9")
+        self.TLabel1_1.configure(foreground="#000000")
+        self.TLabel1_1.configure(font="TkDefaultFont")
+        self.TLabel1_1.configure(relief="flat")
+        self.TLabel1_1.configure(anchor='w')
+        self.TLabel1_1.configure(justify='left')
+        self.TLabel1_1.configure(text='''Numéro mobile''')
+        self._show_contact()
 
 
     def _show_contact(self):
@@ -184,33 +251,37 @@ class ContactListGui:
     def selected(self, *args):
 
         selection = self.Scrolledlistbox1.selection_get()
+        assert len(selection)> 0, ''' mauvais selection '''
         contact_name = selection.strip().split('.')[1].strip().split(' ')[0]
         if contact_name in contact_dic.keys():
-
-            contact_getted = contact_dic.get(contact_name)[:5]
-
+            global contact_getted
+            contact_getted = Contact_Struct(*contact_dic.get(contact_name)[:6])
+        self._get_selected()
         end = len(self.Entry_nom.get())
         self.Entry_nom.delete(0, end)
-        self.Entry_nom.insert(0, contact_getted[1].title())
+        self.Entry_nom.insert(0, contact_getted.c_nom.title())
 
         end = len(self.Entry_prenoms.get())
         self.Entry_prenoms.delete(0, end)
-        self.Entry_prenoms.insert(0, contact_getted[2].title())
+        self.Entry_prenoms.insert(0, contact_getted.c_prenoms.title())
 
         end = len(self.Entry_numero.get())
         self.Entry_numero.delete(0, end)
-        self.Entry_numero.insert(0, contact_getted[3])
+        self.Entry_numero.insert(0, contact_getted.c_numero)
 
         try:
 
-            load = Image.open(f'{IMAGES_DIR}/{contact_getted[4]}.jpg')
+            load = Image.open(f'{IMAGES_DIR}/{contact_getted.c_photo}.jpg')
         except FileNotFoundError as e:
-            load = Image.open(f'{IMAGES_DIR}/{contact_getted[4]}.png')
-            
-        load.thumbnail((140,155))
-        global _img0
-        _img0 = ImageTk.PhotoImage(load)
-        self.photo_contact.configure(image=_img0)
+            try:
+                load = Image.open(f'{IMAGES_DIR}/{contact_getted.c_photo}.png')
+            except  FileNotFoundError as e:
+                load = Image.open(f'{IMAGES_DIR}/img.jpg')
+        finally:          
+            load.thumbnail((140,155))
+            global _img0
+            _img0 = ImageTk.PhotoImage(load)
+            self.photo_contact.configure(image=_img0)
 
         return args
 
@@ -219,7 +290,7 @@ class ContactListGui:
         end = len(contact_list)
         self.Scrolledlistbox1.delete(1, end)
         self._show_contact()
-        
+
     def clear_list(self):
         end = len(contact_list)
         self.Scrolledlistbox1.delete(1, end)

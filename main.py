@@ -6,7 +6,6 @@ import config
 from interface.login_gui import login_gui_launcher
 from interface import main_laucnher
 from models import db_config
-import session_data
 
 
 if __name__ == '__main__':

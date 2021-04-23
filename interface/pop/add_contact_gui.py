@@ -159,6 +159,8 @@ class PopMenu:
             filetypes=(("photo png", "*.png"), ("photo jpg", "*.jpg"), ("photo gif", ".gif"),("photo jpeg", "*.jpeg") ) )
         PopMenu.load_photo = path_photo
 
+        return path_photo
+
     def _select_photo(self):
         self.__get_photo()
 

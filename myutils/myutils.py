@@ -1,6 +1,9 @@
 import sys
 import os
 from PIL import Image
+#from collections import namedtuple
+from typing import NamedTuple
+
 
 def set_syspath(absolute_dependencies: list):
 
@@ -33,4 +36,13 @@ def image_resize(image_path: str, img_format:tuple = (130,) ):
 		print('Ooops !')
 
 	return image
+
+
+class  Contact_Struct(NamedTuple):
+	c_id: int
+	c_nom: str
+	c_prenoms : str
+	c_numero: str
+	c_photo: str
+	c_user_id : int
 

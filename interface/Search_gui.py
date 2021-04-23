@@ -6,6 +6,8 @@ from .message_box import show_info, show_warming, show_error
 from .contact_list_gui import ContactListGui
 import session_data
 from models import UserModel
+
+
 class SearchGui(ContactListGui):
     
     def __init__(self, top):

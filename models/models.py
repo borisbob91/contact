@@ -203,9 +203,9 @@ class UserModel:
 
 
 class ContactModel:
-	def __init__(self, nom: str=None, prenoms: str =None, numero:str = None, photo: str=None, user_id: int=None):
+	def __init__(self, nom: str=None, prenoms: str =None, numero:str = None, photo: str=None, user_id=None):
 		assert nom.isalnum(), '''Le nom doit etre en caractere'''
-		assert user_id.isnum() and user_id != None , 'id: <class int> and required'
+		assert str(user_id).isnumeric() and user_id != None , 'id: <class int> and required'
 
 		self._contact_name = nom
 		self._contact_lastname = prenoms
@@ -299,7 +299,6 @@ class ContactModel:
 
 		return resultat
 
-	
 	def set_id(self, c_id):
 		self._user_id = c_id
 

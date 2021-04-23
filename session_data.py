@@ -1,9 +1,7 @@
 from typing import NamedTuple
 import pickle
 
-session_username = 'BorisBob'
-session_password = 'mon_pass'
-session_user_id = None
+
 
 class SessionData:
 	def __init__(self, session_username,session_password, session_user_id):
@@ -28,20 +26,25 @@ class SessionCredential(NamedTuple):
 	s_user_id  : int
 
 
-session_data = SessionCredential("boris","admin",3)
 
-"""
-data_file = open('session_data.pickle', 'wb')
 
-data_pickle = pickle.dump(session_data,data_file)
+if __name__ == '__main__':
 
-data_file.close()
-"""
+	session_username = 'BorisBob'
+	session_password = 'mon_pass'
+	session_user_id = None
 
-data_file = open('session_data.pickle', 'rb')
+	session_data = SessionCredential("boris","admin",3)
 
-freeze_data = pickle.load(data_file)
+	"""
+	data_file = open('session_data.pickle', 'wb')
 
-print(freeze_data)
+	data_pickle = pickle.dump(session_data,data_file)
 
+	data_file.close()
+	"""
+
+	#data_file = open('session_data.pickle', 'rb')
+
+	#freeze_data = pickle.load(data_file)
 

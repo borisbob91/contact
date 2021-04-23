@@ -33,3 +33,18 @@ FROM <table1> T1 JOIN
      ON T1.Name LIKE CONCAT('%', Ts.Value, '%')
 GROUP BY t1.Name
 HAVING COUNT(*) = (SELECT COUNT(*) FROM #TempSearch); '''
+
+
+
+if not None:
+
+
+
+	pass
+
+if None :
+
+
+	pass
+	if not None:
+		
