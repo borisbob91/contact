@@ -15,6 +15,8 @@ from os import path
 
 class ContactInfoGui:
     def __init__(self, top):
+        global file_img
+        file_img = None
         self.Labelframe2 = tk.LabelFrame(top)
         self.Labelframe2.place(relx=0.329, rely=0.151, relheight=0.43
                 , relwidth=0.658)
@@ -110,38 +112,57 @@ class ContactInfoGui:
         self.tooltip_font = "TkDefaultFont"
         self.add_contact_btn_tooltip = \
                 ToolTip(self.add_contact_btn, self.tooltip_font, '''ajouter un nouveau contact''')
-                
+        global photo_file
+        photo_file = False       
         
     def _get_selected(self):
-       tmp_selection = contact_getted
-       return tmp_selection
+        tmp_selection = contact_getted
+        return tmp_selection
 
     def __validate_change(self):
-        name = self.Entry_nom.get().lower()
-        last_name = self.Entry_prenoms.get().lower()
-        number = self.Entry_numero.get()
-        photo = ''
+        e_name = self.Entry_nom.get().lower()
+        e_last_name = self.Entry_prenoms.get().lower()
+        e_number = self.Entry_numero.get()
+        e_photo = photo_file
 
-        assert name.isalnum(), ''' name :<classe alnum> '''
-        assert last_name.isalnum() or last_name == '', ''' last_name :<classe alnum> '''
-        assert str(number).isnumeric() , ''' numero <class numeric> '''
+        assert e_name.isalnum(), ''' name :<classe alnum> '''
+        if e_last_name:
+            assert e_last_name.isalnum() or last_name == '', ''' last_name :<classe alnum> '''
+        assert str(e_number).isnumeric() , ''' numero <class numeric> '''
 
-        if contact_getted.c_nom != name or contact_getted.c_prenoms != last_name or file_img != None :
-            print('modifications')
+        if contact_getted:
+            if (contact_getted.c_nom != e_name or contact_getted.c_prenoms != e_last_name \
+                or contact_getted.c_numero != e_number ) or e_photo :
+                #NewContact = ContactModel(e_name, e_last_name, e_number, e_photo )
+                if e_photo:
+                #e_photo = contact_getted.c_photo
+                    print('photo chnagé')
+                    return 1, Contact_Struct(*[contact_getted.c_id, e_name, e_last_name, e_number,path_photo, contact_getted.c_user_id])
+                else:
+                    print('photo non chnagé')
+                    return 0, Contact_Struct(*[contact_getted.c_id, e_name, e_last_name, e_number,contact_getted.c_photo, contact_getted.c_user_id])      
+            else:
+                print('aucune modification apportée')
+                raise  AssertionError; ''' il faut des modifications! '''
+        else:
+            print('impossible de modifier le contact , veuillez selectionnez un contact dans la liste')
+            raise  AssertionError; ''' euillez selectionnez un contact dans la liste! '''
+
 
 
 
     def __get_photo(self):
+        global path_photo
+
         path_photo = filedialog.askopenfilename(initialdir=path.expanduser('~') +'/Images', title = 'select photo', \
             filetypes=(("photo png", "*.png"), ("photo jpg", "*.jpg"), ("photo gif", ".gif"),("photo jpeg", "*.jpeg") ) )
-
         return path_photo
 
     def __show_photo(self):
+        
+        global img
         global file_img
 
-        file_img = None
-        global img
         file_img = self.__get_photo()
         try:
             loaded = Image.open(file_img)
@@ -159,7 +180,6 @@ class ContactInfoGui:
     def change_photo(self):
         global photo_file
         photo_file = self.__show_photo()
-        print(photo_file)
 
     def __save_photo(self, file_name):
 
@@ -171,7 +191,15 @@ class ContactInfoGui:
         return {}
 
     def __save_edit(self):
-        self.__validate_change()
+        status , contact_to_edit = self.__validate_change()
+
+        if status == 1:
+            print('il modification avec photo')
+            print(contact_to_edit)
+        elif status == 0:
+            print('modification sans photo')
+            print(contact_to_edit)
+
 
 
 
@@ -230,7 +258,8 @@ class ContactListGui(ContactInfoGui):
         self.TLabel1_1.configure(justify='left')
         self.TLabel1_1.configure(text='''Numéro mobile''')
         self._show_contact()
-
+        global contact_getted
+        contact_getted = None
 
     def _show_contact(self):
         current_user = UserModel(session_data.session_username)

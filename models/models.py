@@ -204,7 +204,8 @@ class UserModel:
 
 class ContactModel:
 	def __init__(self, nom: str=None, prenoms: str =None, numero:str = None, photo: str=None, user_id=None):
-		assert nom.isalnum(), '''Le nom doit etre en caractere'''
+		assert nom.isalnum(), '''Le nom doit etre en
+		 caractere'''
 		assert str(user_id).isnumeric() and user_id != None , 'id: <class int> and required'
 
 		self._contact_name = nom
@@ -330,7 +331,12 @@ class ContactModel:
 	def search_by_name(self):
 		pass
 
+class ContactEditModle(ContactModel):
+	def __init__(self):
+		super().__init__()
 
+	def update(self, contact_id):
+		pass
 
 
 
