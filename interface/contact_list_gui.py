@@ -1,10 +1,10 @@
 from interface.tkinker_import import *
 from interface.support import *
 
-from models.models import UserModel
+from models.models import UserModel, ContactModel
 from myutils import Contact_Struct
 import session_data
-
+import config
 from config import BASE_DIR, IMAGES_DIR
 import color
 from interface.pop.add_contact_gui import pop_menu_launcher
@@ -12,6 +12,8 @@ from interface.pop.add_contact_gui import pop_menu_launcher
 from .tooltip import ToolTip
 from PIL import Image, ImageTk
 from os import path
+from myutils import  ImageEdit
+from .message_box import *
 
 class ContactInfoGui:
     def __init__(self, top):
@@ -125,31 +127,24 @@ class ContactInfoGui:
         e_number = self.Entry_numero.get()
         e_photo = photo_file
 
-        assert e_name.isalnum(), ''' name :<classe alnum> '''
-        if e_last_name:
-            assert e_last_name.isalnum() or last_name == '', ''' last_name :<classe alnum> '''
-        assert str(e_number).isnumeric() , ''' numero <class numeric> '''
 
         if contact_getted:
             if (contact_getted.c_nom != e_name or contact_getted.c_prenoms != e_last_name \
                 or contact_getted.c_numero != e_number ) or e_photo :
                 #NewContact = ContactModel(e_name, e_last_name, e_number, e_photo )
-                if e_photo:
+                if photo_file:
                 #e_photo = contact_getted.c_photo
-                    print('photo chnagé')
+                    print('photo changé')
                     return 1, Contact_Struct(*[contact_getted.c_id, e_name, e_last_name, e_number,path_photo, contact_getted.c_user_id])
                 else:
-                    print('photo non chnagé')
+                    print('photo non changé')
                     return 0, Contact_Struct(*[contact_getted.c_id, e_name, e_last_name, e_number,contact_getted.c_photo, contact_getted.c_user_id])      
             else:
                 print('aucune modification apportée')
-                raise  AssertionError; ''' il faut des modifications! '''
+                raise  BaseException('aucune modification apportée')
         else:
             print('impossible de modifier le contact , veuillez selectionnez un contact dans la liste')
-            raise  AssertionError; ''' euillez selectionnez un contact dans la liste! '''
-
-
-
+            raise  BaseException('Veuillez selectionnez un contact dans la liste! ')
 
     def __get_photo(self):
         global path_photo
@@ -192,13 +187,58 @@ class ContactInfoGui:
 
     def __save_edit(self):
         status , contact_to_edit = self.__validate_change()
+        nom = contact_to_edit.c_nom
+        prenoms= contact_to_edit.c_prenoms
+        numero = contact_to_edit.c_numero
+        user_id = contact_to_edit.c_user_id
+        contact_id = contact_to_edit.c_id
 
+        CurrentUser = UserModel(session_data.session_username)
+
+        updateContact = ContactModel(nom=nom, prenoms=prenoms, numero=numero , user_id=user_id ,\
+         contact_id=contact_id )
+
+        assert list(CurrentUser.get_id)[0] > 0 , ''' Attentions vous êtes pas connecté '''
+        updateContact.set_id(CurrentUser.get_id[0])
+        
         if status == 1:
-            print('il modification avec photo')
-            print(contact_to_edit)
+            print('il y a modification avec photo')
+            extention ='png'
+            image_path = contact_to_edit.c_photo
+            destination = f'{config.IMAGES_DIR}/img_{contact_to_edit.c_id}.{extention}'
+
+            new_photo = ImageEdit(image_path, (150,  200) , destination)
+            succes = new_photo.save()
+            if succes:
+                updateContact.update_img()
+                print('photo edité')
+            else:
+                print('photo non edité')
+
+            if updateContact.update_valide() :
+                update = updateContact.update()
+                if update :
+                    show_info('info', 'Information enregistré !')
+                else:
+                    show_error('error', 'problème lors de l\' enregistrement !')
+            else:
+                show_warming("error",'Le nom et Prénoms existes déja !')
+
         elif status == 0:
             print('modification sans photo')
-            print(contact_to_edit)
+
+            if updateContact.update_valide() :
+                update = updateContact.update()
+                if update :
+                    show_info('info', 'Information enregistré !')
+                else:
+                    show_error('error', 'Le nom et Prénoms existes déja !')
+                #updateContact.update()
+            else:
+                show_warming("error",'Le nom et Prénoms existes déja !')
+
+        else:
+            show_info('attentions','veuillez selectionner un contact à modifier !')
 
 
 
@@ -271,7 +311,16 @@ class ContactListGui(ContactInfoGui):
             for contact in contact_list:
                 self.Scrolledlistbox1.insert( i , f"{i}.{contact[1]} {contact[2]}")
                 i += 1
-                contact_name.append(contact[1])
+                if contact[2] :
+                    name_slug =  '_'.join(contact[2].split(' '))
+                    
+                else:
+                    name_slug = contact[2]
+
+                contact_name.append(str(f'{contact[1]}_{name_slug}'))
+                    
+                
+            print("name", contact_name)
 
             global contact_dic
             contact_dic = {name:value for name, value in zip(contact_name,contact_list)}
@@ -281,8 +330,12 @@ class ContactListGui(ContactInfoGui):
 
         selection = self.Scrolledlistbox1.selection_get()
         assert len(selection)> 0, ''' mauvais selection '''
-        contact_name = selection.strip().split('.')[1].strip().split(' ')[0]
-        if contact_name in contact_dic.keys():
+        #contact_name = selection.strip().split('.')[1].strip().split(' ')[0]
+        #contact_name = selection.strip().split('.')[0]
+        contact_name = '_'.join(selection.split('.')[1].split(' '))
+        print(contact_name)
+        print("selection id:", contact_name)
+        if str(contact_name) in contact_dic.keys():
             global contact_getted
             contact_getted = Contact_Struct(*contact_dic.get(contact_name)[:6])
         self._get_selected()

@@ -155,7 +155,7 @@ class UserModel:
 					db = sqlite3.connect(config.db_root)
 					cursor = db.cursor()
 					req_data = (f"{query}%", id_user)
-					req = """ SELECT * FROM t_repertoire  WHERE c_name like ? and t_user_id = ? GROUP BY c_name"""
+					req = """ SELECT * FROM t_repertoire  WHERE ( c_name like ? or c_prenoms like ? ) and t_user_id = ? GROUP BY c_name"""
 					cursor.execute(req, req_data)
 				except Exception as e:
 					print(e)
@@ -203,22 +203,24 @@ class UserModel:
 
 
 class ContactModel:
-	def __init__(self, nom: str=None, prenoms: str =None, numero:str = None, photo: str=None, user_id=None):
-		assert nom.isalnum(), '''Le nom doit etre en
+	def __init__(self, nom: str=None, prenoms: str =None, numero:str = None, photo: str=None, user_id=None, contact_id: int= None):
+		assert str(nom).isalnum(), '''Le nom doit etre en
 		 caractere'''
-		assert str(user_id).isnumeric() and user_id != None , 'id: <class int> and required'
+		assert str(user_id).isnumeric() or user_id == None , 'id: <class int> and required'
 
 		self._contact_name = nom
 		self._contact_lastname = prenoms
 		self._contact_number = numero
 		self._contact_photo_name = photo
 		self._user_id = user_id
+		self._contact_id = contact_id
 
 	def checking_data(self):
 		if (self._contact_name or self._contact_number):
-			pass
+			print('erreur')
 		else:
 			assert self._contact_name != None or self._contact_number != None, 'Fournit un nom ou Numero' 
+			print('erreur')
 
 	def __set_contact(self):
 		try:
@@ -248,10 +250,9 @@ class ContactModel:
 		try:
 			db = sqlite3.Connection(config.db_root)
 			cursor = db.cursor()
-			req = "SELECT c_name FROM t_repertoire WHERE c_name = ? and t_user_id = ? "
-			user_to_check = (self._contact_name, self._user_id)
+			req = "SELECT id, c_name, c_prenoms FROM t_repertoire WHERE (c_name = ? and c_prenoms = ? ) and t_user_id = ? "
+			user_to_check = (self._contact_name, self._contact_lastname, self._user_id)
 		except Exception as e:
-			db.rollback()
 			print("erreur: ",e)
 		else:
 			cursor.execute(req, user_to_check)
@@ -270,7 +271,6 @@ class ContactModel:
 			to_check = (self._contact_number,self._user_id)
 			cursor.execute(req, to_check)
 		except Exception as e:
-			db.rollback()
 			print('erreur db', e)
 		else:
 			resultat = cursor.fetchone()
@@ -279,18 +279,24 @@ class ContactModel:
 		return resultat
 
 	def contact_validator(self) -> dict:
-		
-		check_name = self.__name_checker()
+		check_name = []
+		check_id = []
+		check_number = []
+		if self.__name_checker():
+
+			check_name = self.__name_checker()[1:]
+			check_id = self.__name_checker()[0]
 		
 		check_number = self.__number_checker()
 
-		return {'name': check_name , 'number': check_number}
-	
+		return {'id': check_id, 'name': check_name , 'number': check_number}
+
+
 	def set_photo(self, photo_name):
-		self._contact_photo_name = photo_name
-		
+		self._contact_photo_name = photo_name	
 	
 	def __get_id(self) ->tuple:
+		''' return contact id '''
 		db = sqlite3.Connection(config.db_root)
 		cursor = db.cursor()
 		req = '''SELECT id FROM t_repertoire ORDER By id DESC'''
@@ -300,6 +306,54 @@ class ContactModel:
 
 		return resultat
 
+	def __contact_update_query(self):
+		try:
+			db = sqlite3.Connection(config.db_root)		
+			cursor = db.cursor()
+			query = (self._contact_name, self._contact_lastname, self._contact_number, self._contact_photo_name ,self._contact_id , self._user_id)
+			statment = ''' UPDATE t_repertoire SET c_name = ? , c_prenoms = ?, c_numero = ?, c_photo = ? WHERE id = ? and t_user_id = ? '''
+			cursor.execute(statment, query)
+		except Exception as e:
+			db.rollback()
+			return 0
+			print('update echoué !',e)
+		else:
+			db.commit()
+			return 1
+		finally:
+			db.close()
+
+	def update_img(self):
+		self._contact_photo_name = f'img_{self._contact_id}'
+
+	def __update_validator_query(self):
+		resultat = ()
+		try:
+			db = sqlite3.Connection(config.db_root)
+			cursor = db.cursor()
+			query =(self._contact_name, self._contact_lastname, self._contact_id, self._user_id)
+			statement = ''' SELECT count(*) FROM t_repertoire WHERE c_name = ? and c_prenoms = ?  AND id != ? and t_user_id = ? '''
+			cursor.execute(statement, query)
+		except Exception as e:
+			print('probleme de verification de donnée')
+			print(e)
+		else:
+			resultat = cursor.fetchall()
+			db.close()
+		return resultat[0]
+	
+	def update_valide(self):
+		
+		if self.__update_validator_query()[0] == 0:
+			q = True #on accepte la modification
+		else:
+			q = False
+		return q
+
+	def update(self):
+		return self.__contact_update_query()
+
+		
 	def set_id(self, c_id):
 		self._user_id = c_id
 
@@ -327,17 +381,6 @@ class ContactModel:
 	@property
 	def get_user_id(self):
 		return self._user_id
-
-	def search_by_name(self):
-		pass
-
-class ContactEditModle(ContactModel):
-	def __init__(self):
-		super().__init__()
-
-	def update(self, contact_id):
-		pass
-
 
 
 
