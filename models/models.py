@@ -203,6 +203,7 @@ class UserModel:
 
 
 class ContactModel:
+
 	def __init__(self, nom: str=None, prenoms: str =None, numero:str = None, photo: str=None, user_id=None, contact_id: int= None):
 		assert str(nom).isalnum(), '''Le nom doit etre en
 		 caractere'''
@@ -262,7 +263,7 @@ class ContactModel:
 
 		return resultat
 
-	def __number_checker(self):
+	def __number_checker(self) -> tuple:
 		try:
 
 			db = sqlite3.Connection(config.db_root)
@@ -281,7 +282,6 @@ class ContactModel:
 	def contact_validator(self) -> dict:
 		check_name = []
 		check_id = []
-		check_number = []
 		if self.__name_checker():
 
 			check_name = self.__name_checker()[1:]
@@ -290,7 +290,6 @@ class ContactModel:
 		check_number = self.__number_checker()
 
 		return {'id': check_id, 'name': check_name , 'number': check_number}
-
 
 	def set_photo(self, photo_name):
 		self._contact_photo_name = photo_name	
@@ -306,7 +305,7 @@ class ContactModel:
 
 		return resultat
 
-	def __contact_update_query(self):
+	def __contact_update_query(self) -> int:
 		try:
 			db = sqlite3.Connection(config.db_root)		
 			cursor = db.cursor()
@@ -326,7 +325,7 @@ class ContactModel:
 	def update_img(self):
 		self._contact_photo_name = f'img_{self._contact_id}'
 
-	def __update_validator_query(self):
+	def __update_validator_query(self) -> tuple:
 		resultat = ()
 		try:
 			db = sqlite3.Connection(config.db_root)
@@ -342,7 +341,7 @@ class ContactModel:
 			db.close()
 		return resultat[0]
 	
-	def update_valide(self):
+	def update_valide(self) -> bool:
 		
 		if self.__update_validator_query()[0] == 0:
 			q = True #on accepte la modification
@@ -353,6 +352,18 @@ class ContactModel:
 	def update(self):
 		return self.__contact_update_query()
 
+	def __contact_delete_query(self):
+			db = sqlite3.Connection(config.db_root)
+			cursor = db.cursor()
+			statement = ''' DELETE from t_repertoire WHERE id = ? and t_user_id = ? '''
+			query = (self._contact_id, self._user_id)
+			cursor.execute(statement, query)
+			db.commit()
+			db.close()
+			return True
+
+	def delete(self):
+		return self.__contact_delete_query()
 		
 	def set_id(self, c_id):
 		self._user_id = c_id
@@ -384,6 +395,28 @@ class ContactModel:
 
 
 
+class EditContact:
+
+	def __init__(self, id , user_id):
+		self._id = id
+		self._user_id = user_id
+
+	def __contact_delete_query(self):
+		try:
+			db = sqlite3.Connection(config.db_root)
+			cursor = db.cursor()
+			statement = ''' DELETE from t_repertoire WHERE id = ? and t_user_id = ? '''
+			jls_extract_var = (int(self._id), int(self._user_id))
+			cursor.execute(statement, jls_extract_var)
+		except:
+			return False
+			print('probleme de suppression !')
+		else:
+			return True
+		finally:
+			db.close()
+
+	def delete(self):
+		return self.__contact_delete_query()
 
 
-	

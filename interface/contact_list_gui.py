@@ -1,7 +1,7 @@
 from interface.tkinker_import import *
 from interface.support import *
 
-from models.models import UserModel, ContactModel
+from models.models import UserModel, ContactModel, EditContact
 from myutils import Contact_Struct
 import session_data
 import config
@@ -14,6 +14,7 @@ from PIL import Image, ImageTk
 from os import path
 from myutils import  ImageEdit
 from .message_box import *
+
 
 class ContactInfoGui:
     def __init__(self, top):
@@ -101,7 +102,7 @@ class ContactInfoGui:
         self.delete_contact_btn.place(relx=0.083, rely=0.698, height=22, width=124
                         , bordermode='ignore')
         self.delete_contact_btn.configure(takefocus="")
-        self.delete_contact_btn.configure(text='''Supprimier''')
+        self.delete_contact_btn.configure(text='''Supprimier''', command = self.delete_contact)
         self.tooltip_font = "TkDefaultFont"
         self.delete_contact_btn_tooltip = \
                 ToolTip(self.delete_contact_btn, self.tooltip_font, '''Supprimer le contact de la liste''')
@@ -134,16 +135,19 @@ class ContactInfoGui:
                 #NewContact = ContactModel(e_name, e_last_name, e_number, e_photo )
                 if photo_file:
                 #e_photo = contact_getted.c_photo
-                    print('photo changé')
+                    #print('photo changé')
                     return 1, Contact_Struct(*[contact_getted.c_id, e_name, e_last_name, e_number,path_photo, contact_getted.c_user_id])
                 else:
-                    print('photo non changé')
+                    #print('photo non changé')
                     return 0, Contact_Struct(*[contact_getted.c_id, e_name, e_last_name, e_number,contact_getted.c_photo, contact_getted.c_user_id])      
             else:
-                print('aucune modification apportée')
+                #print('aucune modification apportée')
+                show_info('info', 'Auncune modification détectée !')
                 raise  BaseException('aucune modification apportée')
         else:
-            print('impossible de modifier le contact , veuillez selectionnez un contact dans la liste')
+            #print('impossible de modifier le contact , veuillez selectionnez un contact dans la liste')
+            show_warming('Attention', 'Veuillez selectionnez un contact dans la liste! !')
+
             raise  BaseException('Veuillez selectionnez un contact dans la liste! ')
 
     def __get_photo(self):
@@ -202,7 +206,7 @@ class ContactInfoGui:
         updateContact.set_id(CurrentUser.get_id[0])
         
         if status == 1:
-            print('il y a modification avec photo')
+            #print('il y a modification avec photo')
             extention ='png'
             image_path = contact_to_edit.c_photo
             destination = f'{config.IMAGES_DIR}/img_{contact_to_edit.c_id}.{extention}'
@@ -211,9 +215,10 @@ class ContactInfoGui:
             succes = new_photo.save()
             if succes:
                 updateContact.update_img()
-                print('photo edité')
+                #print('photo edité')
             else:
-                print('photo non edité')
+                #print('photo non edité')
+                pass
 
             if updateContact.update_valide() :
                 update = updateContact.update()
@@ -225,7 +230,7 @@ class ContactInfoGui:
                 show_warming("error",'Le nom et Prénoms existes déja !')
 
         elif status == 0:
-            print('modification sans photo')
+            #print('modification sans photo')
 
             if updateContact.update_valide() :
                 update = updateContact.update()
@@ -240,8 +245,21 @@ class ContactInfoGui:
         else:
             show_info('attentions','veuillez selectionner un contact à modifier !')
 
-
-
+    def delete_contact(self):
+        if contact_getted:
+            contact_id = contact_getted.c_id
+            contact_user_id = contact_getted.c_user_id
+            Contact_selected = ContactModel(contact_id = contact_id , user_id = contact_user_id)
+            response = show_yes_no('attentions','Vous le vous supprimer ce contact ?')
+            if response:
+                request = Contact_selected.delete()
+                if request:
+                    show_info("info", 'contact supprimer avec succès !')
+                    self.refresh_list()
+                else:
+                    show_warming("Attention", 'echec de suppression !')       
+        else:
+            show_error('erreur','veuillez selectionner un contact dans la liste')
 
 class ContactListGui(ContactInfoGui):
 
@@ -317,10 +335,7 @@ class ContactListGui(ContactInfoGui):
                 else:
                     name_slug = contact[2]
 
-                contact_name.append(str(f'{contact[1]}_{name_slug}'))
-                    
-                
-            print("name", contact_name)
+                contact_name.append(str(f'{contact[1]}_{name_slug}')) 
 
             global contact_dic
             contact_dic = {name:value for name, value in zip(contact_name,contact_list)}
@@ -333,8 +348,8 @@ class ContactListGui(ContactInfoGui):
         #contact_name = selection.strip().split('.')[1].strip().split(' ')[0]
         #contact_name = selection.strip().split('.')[0]
         contact_name = '_'.join(selection.split('.')[1].split(' '))
-        print(contact_name)
-        print("selection id:", contact_name)
+        #print(contact_name)
+        #print("selection id:", contact_name)
         if str(contact_name) in contact_dic.keys():
             global contact_getted
             contact_getted = Contact_Struct(*contact_dic.get(contact_name)[:6])
