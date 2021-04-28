@@ -47,7 +47,7 @@ class SearchGui(ContactListGui):
         self.search_radio_btn_1.configure(text='''Par Numero''')
         self.search_radio_btn_1.configure(value = 0, variable=is_by_name, command= self.get_radio_value)
 
-          #messagbow : showerror, showinfo, showwarning, askyesno, askokcancel ...etc
+        #messagbow : showerror, showinfo, showwarning, askyesno, askokcancel ...etc
     def show_message_box(self):
         messagebox.showwarning('Attentions:', "Veuillez entrez une valeur")
 
@@ -76,9 +76,9 @@ class SearchGui(ContactListGui):
             resultat = self.search_by_number(value_enter)
             self.clear_list()
             if not len(resultat) > 0 :
-                self.Scrolledlistbox1.insert( 1 , f"Auncun resultat pour {value_enter}!")
-                    
-            self._show_resultat(resultat)
+                self.Scrolledlistbox1.insert( 1 , f"Auncun resultat pour {value_enter} !")
+            else:       
+                self._show_resultat(resultat)
 
         return {}
        
@@ -90,15 +90,10 @@ class SearchGui(ContactListGui):
         return is_name
 
     def search_by_name(self, word):
-        search_result = current_user.search_contact_by_name(word, 1)
+        return current_user.search_contact_by_name(word)
         
-        return search_result
-        
-    
     def search_by_number(self, number):
-        search_result = current_user.search_contact_by_name(number, 0)
-        
-        return search_result
+        return current_user.search_contact_by_number(number)
 
     def _show_resultat(self, query_resultat=None):
         contact_name = list()

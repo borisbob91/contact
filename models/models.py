@@ -150,16 +150,14 @@ class UserModel:
 		id_user = self.get_id[0] 
 		if id_user > 0 :
 			if table_code == 1:
-
 				try:
 					db = sqlite3.connect(config.db_root)
 					cursor = db.cursor()
-					req_data = (f"{query}%", id_user)
+					req_data = (f"{query}%",f"{query}%", id_user)
 					req = """ SELECT * FROM t_repertoire  WHERE ( c_name like ? or c_prenoms like ? ) and t_user_id = ? GROUP BY c_name"""
 					cursor.execute(req, req_data)
-				except Exception as e:
-					print(e)
-
+				except:
+					print('erreur recherche')
 				else:
 					resultat = cursor.fetchall()
 				finally:
@@ -174,17 +172,20 @@ class UserModel:
 					cursor.execute(req, req_data)
 				except Exception as e:
 					print(e)
-
 				else:
 					resultat = cursor.fetchall()
 				finally:
 					db.close()
 			else:
-				raise AssertionError ; '''indiquer un table correct'''
+				raise BaseException('''indiquer une table correct''')
+			return resultat
 
-		return resultat
+	def search_contact_by_name(self, query):
+		table_code = 1
+		return self.__query_search(query, table_code)
 
-	def search_contact_by_name(self, query, table_code):
+	def search_contact_by_number(self, query):
+		table_code = 0
 		return self.__query_search(query, table_code)
 
 	def checking_data(self):
