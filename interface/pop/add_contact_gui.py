@@ -126,7 +126,6 @@ class PopMenu:
                         show_info('error', 'Le numero entré exite déja :')
 
                 else:
-                    print('on continue l\'enregistrement ici')
 
                     if NewContact.get_user_id > 0:
 

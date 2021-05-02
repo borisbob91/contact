@@ -147,7 +147,7 @@ class Interface:
         lb.pack()
 
 
-def main_laucnher():
+def main_launcher():
     global main_app
     main_app = tkinter.Tk()
     global main_window

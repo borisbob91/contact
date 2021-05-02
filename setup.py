@@ -7,5 +7,5 @@ setup(name='myutils',
     author='Boris Bob',
     author_email='borisbob91@gmail.com',
     license='MIT',
-    packages=['myutils', 'interface', 'images','models'],
+    packages=['myutils', 'interface', 'images','models','views'],
     zip_safe=False)

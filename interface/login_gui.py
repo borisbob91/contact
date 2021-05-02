@@ -5,13 +5,14 @@ from .tkinker_import import *
 from .support import *
 from .tooltip import ToolTip
 #from .interface import Interface
-from interface.interface import main_laucnher
+from interface.interface import main_launcher
 from interface.message_box import (show_warming, show_info, 
                                     show_error, show_ask_string)
 from interface.about_gui import about_gui_launcher
 
 from models import UserModel
 
+from session_data import write_token
 import session_data
 import color
 
@@ -214,6 +215,7 @@ class LoginSignup:
             pass_value = self.password_entry.get()
             username_value = self.username_entry.get()
             #print(username_value,' : ',pass_value)
+            assert not pass_value.isspace(), 'champ password ne supprote pas les espaces'
 
             user_input = UserModel(username_value.lower(), pass_value)
             data_user = user_input.user_validator()
@@ -223,7 +225,9 @@ class LoginSignup:
                 session_username = data_user['user'][0]
                 session_data.session_username = data_user['user'][0]
                 login_destry()
-                main_laucnher()
+                name,pwd,u_id = user_input.get_user_data
+                write_token(name,pwd,u_id)
+                main_launcher()
             else:
                 erro_title = 'Login Error'
                 error_msg='Les identifiants saisies sont incorrectes'
@@ -239,9 +243,9 @@ class LoginSignup:
         len(self.nw_password_entry.get()) > LoginSignup._login_min and \
         len(self.secret_entry.get()) >= 4 :
 
-            username_value = self.nw_username_entry.get()
-            pass_value = self.nw_password_entry.get()
-            secret_value = self.secret_entry.get()
+            username_value = self.nw_username_entry.get().strip()
+            pass_value = self.nw_password_entry.get().strip()
+            secret_value = self.secret_entry.get().strip()
             
 
             new_user = UserModel(username_value.lower(), pass_value, secret_value)

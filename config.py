@@ -9,7 +9,7 @@ FILE_PATH = os.path.abspath(__file__)
 BASE_DIR = os.path.dirname(FILE_PATH)
 IMAGES_DIR = os.path.join(BASE_DIR, 'images')
 DB_ROOT = os.path.join(BASE_DIR, 'models')
-
+UID_ROOT = os.path.join(BASE_DIR, 'uid')
 db_root = 'models/contact.db'
 
 

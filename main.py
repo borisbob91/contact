@@ -4,7 +4,7 @@
 import config
 
 from interface.login_gui import login_gui_launcher
-from interface import main_laucnher
+from interface import main_launcher
 from models import db_config
 
 
@@ -15,4 +15,4 @@ if __name__ == '__main__':
     db = db_config.configure()
 
     login_gui_launcher()
-    #main_laucnher()
+    #main_launcher()

@@ -9,3 +9,4 @@ btnColor = '#82d8c1'
 btnFontColor = 'white'
 
 fontColor = '#ffffff'
+selectionBg = '#ffffff'

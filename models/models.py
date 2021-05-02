@@ -13,6 +13,12 @@ class UserModel:
 		self._password = password
 		self._secret  = secret
 
+	@property
+	def get_user_data(self):
+		if self.__user_verification():
+			return (self._username, self._password, self.get_id[0] )
+
+
 	def __set_user(self):
 		db = sqlite3.Connection(config.db_root)
 		cursor = db.cursor()
@@ -62,7 +68,7 @@ class UserModel:
 
 		db = sqlite3.Connection(config.db_root)
 		cursor = db.cursor()
-		req = '''SELECT t_user_name, t_user_passe FROM t_user WHERE t_user_name = ? AND t_user_passe = ?'''
+		req = '''SELECT  t_user_name, t_user_passe FROM t_user WHERE t_user_name = ? AND t_user_passe = ?'''
 		user_input_data = (self._username, self._password )
 		cursor.execute(req, user_input_data)
 		resultat = cursor.fetchone()
@@ -91,6 +97,7 @@ class UserModel:
 	@property
 	def get_id(self):
 		qs = self.__get_user_id()
+		
 		if qs != None:
 			return qs
 		else:
@@ -153,7 +160,7 @@ class UserModel:
 				try:
 					db = sqlite3.connect(config.db_root)
 					cursor = db.cursor()
-					req_data = (f"{query}%",f"{query}%", id_user)
+					req_data = (f"{query}%", f"{query}%", id_user)
 					req = """ SELECT * FROM t_repertoire  WHERE ( c_name like ? or c_prenoms like ? ) and t_user_id = ? GROUP BY c_name"""
 					cursor.execute(req, req_data)
 				except:
@@ -206,8 +213,7 @@ class UserModel:
 class ContactModel:
 
 	def __init__(self, nom: str=None, prenoms: str =None, numero:str = None, photo: str=None, user_id=None, contact_id: int= None):
-		assert str(nom).isalnum(), '''Le nom doit etre en
-		 caractere'''
+		#assert str(nom).isalnum() or nom == None, '''Le nom doit etre en caractere'''
 		assert str(user_id).isnumeric() or user_id == None , 'id: <class int> and required'
 
 		self._contact_name = nom
@@ -395,29 +401,10 @@ class ContactModel:
 		return self._user_id
 
 
-
-class EditContact:
-
-	def __init__(self, id , user_id):
-		self._id = id
-		self._user_id = user_id
-
-	def __contact_delete_query(self):
-		try:
-			db = sqlite3.Connection(config.db_root)
-			cursor = db.cursor()
-			statement = ''' DELETE from t_repertoire WHERE id = ? and t_user_id = ? '''
-			jls_extract_var = (int(self._id), int(self._user_id))
-			cursor.execute(statement, jls_extract_var)
-		except:
-			return False
-			print('probleme de suppression !')
-		else:
-			return True
-		finally:
-			db.close()
-
-	def delete(self):
-		return self.__contact_delete_query()
+class ImportModels(ContactModel):
+	def __init__(self,name,l_name,num,u_id):
+		super().__init__(nom=name, prenoms= l_name, numero =num,user_id = u_id)
 
 
+	
+		

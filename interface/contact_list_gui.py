@@ -1,7 +1,7 @@
 from interface.tkinker_import import *
 from interface.support import *
 
-from models.models import UserModel, ContactModel, EditContact
+from models.models import UserModel, ContactModel
 from myutils import Contact_Struct
 import session_data
 import config
@@ -326,16 +326,28 @@ class ContactListGui(ContactInfoGui):
             global contact_list
             contact_list = current_user.get_contact_list()
             i = 1
+            #print(contact_list)
             for contact in contact_list:
                 self.Scrolledlistbox1.insert( i , f"{i}.{contact[1]} {contact[2]}")
+                conctact = list(contact)
+                #print('lsit conctact :', contact)
                 i += 1
                 if contact[2] :
+
                     name_slug =  '_'.join(contact[2].split(' '))
                     
                 else:
                     name_slug = contact[2]
 
-                contact_name.append(str(f'{contact[1]}_{name_slug}')) 
+               
+                name_slug2 = '_'.join(contact[1].replace("+", ' ').split(' '))
+
+                slug = str(f'{conctact[0]}_{name_slug2}')
+                slug.replace("(", "_").replace(")", "_").replace("'", "_").replace("-", "_")
+                print('new slug: ', slug)
+                #contact_name.append(slug)
+                contact_name.append(str(f'{contact[1]}_{name_slug}'))
+            #print(contact_name)
 
             global contact_dic
             contact_dic = {name:value for name, value in zip(contact_name,contact_list)}

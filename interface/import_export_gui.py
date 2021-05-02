@@ -1,24 +1,16 @@
 #! user/bin/env python3
 #coding: utf-8
 
+from views.import_contact import ImportContact, import_main
 
-try:
-    import Tkinter as tk
-except ImportError:
-    import tkinter as tk
+from .tkinker_import import *
 
-try:
-    import ttk
-    py3 = False
-except ImportError:
-    import tkinter.ttk as ttk
-    py3 = True
-
-class ImportExport:
+class ImportExport(ImportContact):
     
     _formt_list = ['opt1','opt2', 'opt3']
 
     def __init__(self, top):
+        super().__init__()
         self.import_export_frame = tk.LabelFrame(top)
         self.import_export_frame.place(relx=0.329, rely=0.597, relheight=0.219
                 , relwidth=0.659)
@@ -67,16 +59,21 @@ class ImportExport:
                 , bordermode='ignore')
         self.select_file_btn.configure(takefocus="")
         self.select_file_btn.configure(text='''Fichier''')
-
-        self.Label3_1 = tk.Label(self.import_export_frame)
-        self.Label3_1.place(relx=0.582, rely=0.221, height=16, width=188
+        self.select_file_btn.configure(command=self._select_file)
+        
+        self.path_var = tk.StringVar()
+        self.path_var.set('''c:/user/.../folder''')
+        self.lable_path = tk.Label(self.import_export_frame)
+        self.lable_path.place(relx=0.582, rely=0.221, height=16, width=200
                 , bordermode='ignore')
-        self.Label3_1.configure(activebackground="#f9f9f9")
-        self.Label3_1.configure(relief="sunken")
-        self.Label3_1.configure(text='''c:/user/.../folder''')
+        self.lable_path.configure(activebackground="#f9f9f9")
+        self.lable_path.configure(relief="sunken")
+        self.lable_path.configure(textvariable=self.path_var)
 
         self.import_btn = ttk.Button(self.import_export_frame)
         self.import_btn.place(relx=0.651, rely=0.738, height=22, width=114
                 , bordermode='ignore')
         self.import_btn.configure(takefocus="")
         self.import_btn.configure(text='''Importer''')
+        self.import_btn.configure(command=self.run)
+        
