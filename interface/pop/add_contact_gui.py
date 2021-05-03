@@ -6,7 +6,6 @@ from interface.support import *
 from interface import login_gui
 from interface.message_box import show_info, show_warming
 from models.models import ContactModel, UserModel
-from myutils import image_resize
 import config
 from os import path
 

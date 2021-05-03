@@ -3,7 +3,7 @@
 
 import os
 import sys
-import pathlib
+from csv import Dialect
 
 FILE_PATH = os.path.abspath(__file__)
 BASE_DIR = os.path.dirname(FILE_PATH)
@@ -30,5 +30,7 @@ def configure():
 
     return {}
     
+
 if __name__ == '__main__':
+
     configure()

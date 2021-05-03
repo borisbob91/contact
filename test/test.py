@@ -1,3 +1,4 @@
+
 contact_format = ['TEL;CELL', 'N', 'FN']
 db_formats = ('name','last_name','number')
 
@@ -56,7 +57,6 @@ def extrate_contact(args:list) -> object():
     return contact_tuple, contacts_dict
                               
 
-
 def map_vcard(files):
 
     delimiter = ["BEGIN:VCARD", "END:VCARD"]
@@ -72,4 +72,4 @@ def map_vcard(files):
             print('no match')
 
     files.close()
-    
+

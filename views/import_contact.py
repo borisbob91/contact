@@ -3,12 +3,11 @@ from typing import NoReturn
 from models import ImportModels
 from interface.tkinker_import import *
 from interface.message_box import show_info
-from copy import  deepcopy
 import os
 from models import ImportModels
 from session_data import read_token
 from time import time
-cvf_file = r"/home/borisbob/Documents/gui-dev/contact/00001.vcf"
+
 
 class ImportContact(ImportModels):
 # contact_format = {'N': '', 'FL': '', 'TEL': '', 'CEL': ''}
@@ -21,7 +20,7 @@ class ImportContact(ImportModels):
 		self.conctact = []
 
 	@staticmethod
-	def get_file():
+	def get_file() -> str:
 		file_path = filedialog.askopenfilename(initialdir=os.path.expanduser('~') + '/Documents', title='fichier contact', \
 		filetypes=(("vcard", "*.vcf"), ("excel", '*.cvs'), ('text', '*.txt')))
 		return file_path
@@ -59,7 +58,7 @@ class ImportContact(ImportModels):
 						else:
 							""" fin bloc"""
 							bloc.append(line)
-							# rint(bloc)
+							# print(bloc)
 				if str(line) != delimiter[1]:
 					item = False
 				else:
@@ -95,21 +94,24 @@ class ImportContact(ImportModels):
 		contact_list = []
 		if filename.endswith('.vcf'):
 
-			contact_list = self.extrate_contact_cvf(self.read_cvf(self.file_path))
+			contact_list = self.extrate_contact_cvf(self.read_cvf(filename))
 			
 		elif filename.endswith('.txt'):
 			file_extention = '.txt'
 
-		elif filename.endswith('.cvs'):
+		elif filename.endswith('.csv'):
 
-			file_extention = '.cvs'
+			file_extention = '.csv'
 		else:
 			raise BaseException('format non supproté')
 
 		return contact_list
 
+
 	def model(self):
 		pass
+
+
 	def run(self):
 		if self.file_path:
 			start = time()
@@ -130,7 +132,6 @@ class ImportContact(ImportModels):
 
 				contact.insert(len(contact)+1, current_user.u_id)
 				contact = tuple(contact)
-				print(contact)
 				name,l_name,num,u_id = contact
 				#print('test :', name,l_name,num,u_id)
 				#nw_list.append(contact)
@@ -150,7 +151,7 @@ class ImportContact(ImportModels):
 					else:
 						compt_fail += 1
 			end = time()
-			show_info('info',f'Impport terminé: \n operations Total: {len(contact_list)} en {end-start}s. \n succès: {compt_ok}\
+			show_info('info',f'Impport terminé: \n operations Total: {len(contact_list[0])} en {end-start}s. \n succès: {compt_ok}\
 				\n echouées:{compt_fail}  \n doublons: {compt_doubl} \n ')
 
 		else:
