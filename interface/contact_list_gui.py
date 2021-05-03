@@ -4,6 +4,7 @@ from interface.support import *
 from models.models import UserModel, ContactModel
 from myutils import Contact_Struct
 import session_data
+from session_data import read_token
 import config
 from config import BASE_DIR, IMAGES_DIR
 import color
@@ -261,6 +262,7 @@ class ContactInfoGui:
         else:
             show_error('erreur','veuillez selectionner un contact dans la liste')
 
+
 class ContactListGui(ContactInfoGui):
 
     def __init__(self, top):
@@ -320,7 +322,8 @@ class ContactListGui(ContactInfoGui):
         contact_getted = None
 
     def _show_contact(self):
-        current_user = UserModel(session_data.session_username)
+        user_cache = read_token()
+        current_user = UserModel(user_cache.u_name)
         contact_name = list()
         if current_user.user_is_valide() :
             global contact_list

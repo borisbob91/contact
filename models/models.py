@@ -406,5 +406,24 @@ class ImportModels(ContactModel):
 		super().__init__(nom=name, prenoms= l_name, numero =num,user_id = u_id)
 
 
-	
+class CheckSuperUser:
+    def __init__(self, u_id=None, username=None, pwd=None ):
+        self.username =  username
+        self.pwd = pwd
+        self.u_id = u_id
+    
+    
+    def __contains__(self, u_id, username, pwd ):
+        pass
+
+    @classmethod
+    def init(cls,u_id, username, pwd):
+        db = sqlite3.Connection(r"./models/contact.db")
+        cursor = db.cursor()
+        #query = (self.u_id, self.username, self.pwd)
+        query = (u_id, username, pwd)
+        statment = """ SELECT t_user_name as name FROM t_user WHERE id = ? AND t_user_name = ? AND t_user_passe = ? """
+        row = cursor.execute(statment, query)
+
+        return row.fetchone()
 		

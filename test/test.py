@@ -73,3 +73,39 @@ def map_vcard(files):
 
     files.close()
 
+class user:
+    def __init__(self, username,password,u_id):
+        self.username = username
+        self.password = password
+        self.u_id = u_id
+
+
+import sqlite3
+import os
+class SuperUser:
+    def __init__(self, u_id=None, username=None, pwd=None ):
+        self.username =  username
+        self.pwd = pwd
+        self.u_id = u_id
+    
+    
+    def __contains__(self, u_id, username, pwd ):
+        pass
+
+    @classmethod
+    def init(cls,u_id, username, pwd):
+        db = sqlite3.Connection(r"./models/contact.db")
+        cursor = db.cursor()
+        #query = (self.u_id, self.username, self.pwd)
+        query = (u_id, username, pwd)
+        statment = """ SELECT t_user_name as name FROM t_user WHERE id = ? AND t_user_name = ? AND t_user_passe = ? """
+        row = cursor.execute(statment, query)
+
+        return row.fetchone()
+        
+Super = SuperUser.init('2','root', 'master')
+
+print(Super[0])
+
+
+

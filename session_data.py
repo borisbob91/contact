@@ -97,6 +97,11 @@ def read_token():
 
 	return user.get_full
 
+def destroy_token():
+	user = SessionData(None, None, None)
+	user.save()
+
+
 
 if __name__ == '__main__':
 
