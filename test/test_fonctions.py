@@ -1,9 +1,22 @@
-
+import pytest
+from myutils import clean_string
+import pytest
+from csv import Dialect
+import sqlite3
 contact_format = ['TEL;CELL', 'N', 'FN']
 db_formats = ('name','last_name','number')
+from copy import deepcopy
+import os
+import sys
 
-        
-    
+FILE_PATH = os.path.abspath(__file__)
+BASE_DIR = os.path.dirname(FILE_PATH)
+IMAGES_DIR = os.path.join(BASE_DIR, 'images')
+DB_ROOT = os.path.join(BASE_DIR, 'models')
+UID_ROOT = os.path.join(BASE_DIR, 'uid')
+db_root = 'models/contact.db'
+
+
 def read() -> list:
     ''' Pour lire les fichiers contact(vcard) format *.vcf ; read(file_path)->list '''
     contact =[]
@@ -73,39 +86,54 @@ def map_vcard(files):
 
     files.close()
 
-class user:
-    def __init__(self, username,password,u_id):
-        self.username = username
-        self.password = password
-        self.u_id = u_id
+import csv
+
+with open('names.csv', 'w', newline='') as csvfile:
+    fieldnames = ['first_name', 'last_name']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+    writer.writeheader()
+    writer.writerow({'first_name': 'Baked', 'last_name': 'Beans'})
+    writer.writerow({'first_name': 'Lovely', 'last_name': 'Spam'})
+    writer.writerow({'first_name': 'Wonderful', 'last_name': 'Spam'})
 
 
-import sqlite3
-import os
-class SuperUser:
-    def __init__(self, u_id=None, username=None, pwd=None ):
-        self.username =  username
-        self.pwd = pwd
-        self.u_id = u_id
-    
-    
-    def __contains__(self, u_id, username, pwd ):
-        pass
+lists =[(367, "DE N'guoran David", '', '+225 0839)3(363', 'img_366', '1', 1, 'admin', 'root', 'master'), (203, 'marie claire', '', '+22549479557', 'img_202', '1', 1, 'admin', 'root', 'master')]
 
-    @classmethod
-    def init(cls,u_id, username, pwd):
-        db = sqlite3.Connection(r"./models/contact.db")
+resul = (506, 'achyseka', 'seka achy', '79813397', None, '2')
+
+@pytest.fixture
+def data():
+    return (506, 'achyseka', 'seka achy', '79813397', None, '2')
+
+def img_id_resolver(resul):
+    """try:
+        db = sqlite3.Connection(db_root)
         cursor = db.cursor()
-        #query = (self.u_id, self.username, self.pwd)
-        query = (u_id, username, pwd)
-        statment = """ SELECT t_user_name as name FROM t_user WHERE id = ? AND t_user_name = ? AND t_user_passe = ? """
-        row = cursor.execute(statment, query)
-
-        return row.fetchone()
+        statement = ''' SELECT * FROM t_repertoire WHERE t_user_id = ? ORDER by id DESC '''
+        query = (1,)
+        cursor.execute(statement, query)
+    except Exception as e :
+        return None
+        print(e)
+    else:
+        resul = cursor.fetchone()
         
-Super = SuperUser.init('2','root', 'master')
+        return resul
+    finally:
+        db.close()"""
+    
+    def auto_update(rows = resul):
+        if resul:
+            rows = deepcopy(list(rows))
+            rows[4] = f'img_{rows[0]}'
+            return tuple(rows)
+    return auto_update()
 
-print(Super[0])
+ 
+ 
+def test_id_resolve(data):
+    obtenu = img_id_resolver(data)
+    attendu = (506, 'achyseka', 'seka achy', '79813397', 'img_506', '2')
 
-
-
+    assert obtenu == attendu

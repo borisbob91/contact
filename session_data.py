@@ -12,11 +12,29 @@ class SessionCredential(NamedTuple):
 	s_active   : int
 
 class SessionData:
+	"""
+ A short description.
+
+ A bit longer description.
+
+ Args:
+     variable (type): description
+
+ Returns:
+     type: description
+
+ Raises:
+     Exception: description
+
+ """
+
 	_file = f'{BASE_DIR}/session_data.pickle'
 	max_day = 604800
 	default_u = ('BotUser', None, 0, 0)
 
-	def __init__(self, session_username:str =None, session_password:str=None, session_user_id:int=None, u_date:str =str(time.time()) ):
+	def __init__(self, session_username:str =None, session_password:str=None,
+			session_user_id:int=None, u_date:str =str(time.time()) ):
+
 		assert isinstance(session_user_id, int) or session_user_id == None, ''' <class: int> '''
 		self._session_username = session_username
 		self._session_password = session_password
@@ -24,7 +42,7 @@ class SessionData:
 		self._session_create_at = u_date
 		global uid_tuple
 		uid_tuple = namedtuple('uid_struct', 'u_name u_pdw u_id u_date')
-		
+
 	def save(self):
 		obj = self.__set_value()
 		try:
@@ -94,12 +112,11 @@ def write_token(name, pwd, u_id):
 
 def read_token():
 	user = SessionData.read_data()
-
 	return user.get_full
 
 def destroy_token():
-	user = SessionData(None, None, None)
-	user.save()
+	write_token(None, None, None)
+
 
 
 
@@ -109,10 +126,12 @@ if __name__ == '__main__':
 	session_password = 'mon_pass'
 	session_user_id = None
 
-	write_token(*args)
+	write_token()
 	read_token()
+	destroy_token()
 
-	
+
+
 
 
 
@@ -131,4 +150,3 @@ if __name__ == '__main__':
 	#data_file = open('session_data.pickle', 'rb')
 
 	#freeze_data = pickle.load(data_file)
-

@@ -1,22 +1,21 @@
 from interface.tkinker_import import *
-
 from .tooltip import ToolTip
 from tkinter import *
-from .message_box import show_info, show_warming, show_error
+from .message_box import show_warming
 from .contact_list_gui import ContactListGui
-import session_data
 from models import UserModel
+from session_data import read_token
 
 
 class SearchGui(ContactListGui):
-    
+    contact_dict = {}
     def __init__(self, top):
         super().__init__(top)
 
         global is_by_name
-        is_by_name = IntVar()
+        is_by_name = tk.IntVar()
         global by_number
-        by_number = IntVar()
+        by_number = tk.IntVar()
         self.search_frame = tk.Frame(top)
         self.search_frame.place(relx=0.0, rely=0.015, relheight=0.128, relwidth=0.32)
         self.search_frame.configure(relief='groove')
@@ -52,8 +51,10 @@ class SearchGui(ContactListGui):
         messagebox.showwarning('Attentions:', "Veuillez entrez une valeur")
 
     def get_search_value(self):
+        self.refresh_entry()
         global current_user
-        current_user = UserModel(session_data.session_username)
+        #current_user = UserModel(session_data.session_username)
+        current_user = UserModel(read_token().u_name)
         value_enter = self.search_Entry.get()
 
         is_name = self.get_radio_value()
@@ -90,25 +91,25 @@ class SearchGui(ContactListGui):
         return is_name
 
     def search_by_name(self, word):
-        return current_user.search_contact_by_name(word)
+        if word:
+            return current_user.search_contact_by_name(word)
         
     def search_by_number(self, number):
-        return current_user.search_contact_by_number(number)
+        if number:
+            return current_user.search_contact_by_number(number)
 
-    def _show_resultat(self, query_resultat=None):
-        contact_name = list()
-
+    def _show_resultat(self, query_resultat):
+        
         global resultat_list
-        resultat_list = query_resultat
-        print(resultat_list)
-        i = 1
-        for contact in resultat_list:
-            self.Scrolledlistbox1.insert( i , f"{i}.{contact[1]} {contact[2]}")
-            i += 1
-            contact_name.append(contact[1])
+        contact_list = query_resultat
+        if query_resultat:
+            i = 1
+            for contact in query_resultat:
+                self.Scrolledlistbox1.insert( i , f"{i}.{contact[1]}")
+                i += 1
+            global contact_dic 
+            self.dictionnaire = contact_dic = self.make_dict_key(query_resultat)
 
-        global contact_dic
-        contact_dic = {name:value for name, value in zip(contact_name,resultat_list)}
-        return {}
+
 
 

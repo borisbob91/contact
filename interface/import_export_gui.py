@@ -7,7 +7,7 @@ from .tkinker_import import *
 
 class ImportExport(ImportContact):
     
-    _formt_list = ['opt1','opt2', 'opt3']
+    _formt_list = ['vcf','txt', 'csv']
 
     def __init__(self, top):
         super().__init__()

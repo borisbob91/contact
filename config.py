@@ -3,7 +3,6 @@
 
 import os
 import sys
-from csv import Dialect
 
 FILE_PATH = os.path.abspath(__file__)
 BASE_DIR = os.path.dirname(FILE_PATH)

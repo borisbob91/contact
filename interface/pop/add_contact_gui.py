@@ -7,7 +7,9 @@ from interface import login_gui
 from interface.message_box import show_info, show_warming
 from models.models import ContactModel, UserModel
 import config
+from session_data import read_token
 from os import path
+
 
 class PopMenu:
     default_img = 'img'
@@ -26,7 +28,7 @@ class PopMenu:
         _posi_x = (_app_widht // 2) - (sub_window_x // 2)
         _posi_y = (_app_height // 2) - (sub_window_y // 2)
 
-        top.title('Ajout nouveau contact')
+        top.title('Ajouter nouveau contact')
         top.geometry(f"{sub_window_x}x{sub_window_y}+{sub_window_x}+{sub_window_y}")
         top.resizable(False, False)
 
@@ -105,16 +107,14 @@ class PopMenu:
                 last_id = NewContact.get_last_id
                 NewContact.set_photo(f'img_{last_id + 1}')
 
-            session_id_name = login_gui.session_username
-
-            if session_id_name != 'BotUser':
-                user_session = UserModel(session_id_name)
+            #session_id_name = login_gui.session_username
+            if read_token().u_name != None:
+                user_session = UserModel(read_token().u_name)
 
                 assert user_session.get_id[0] > 0, """ Attention vous êtes pas connecté"""
 
                 NewContact.set_id(user_session.get_id[0])
 
-                
                 validate = NewContact.contact_validator()
 
                 if validate.get('name') or validate.get('number'):
@@ -123,9 +123,7 @@ class PopMenu:
                         show_info('error', 'Le nom entré exite déja :')
                     else :
                         show_info('error', 'Le numero entré exite déja :')
-
                 else:
-
                     if NewContact.get_user_id > 0:
 
                         contact_saved = NewContact.save()
@@ -149,8 +147,6 @@ class PopMenu:
         else:
             show_info('error', 'veuillez fournit au moin un nom et numero ')
             #pop.mainloop()
-
-        #pop.mainloop()
 
     def __get_photo(self):
         path_photo = filedialog.askopenfilename(parent = pop ,initialdir=path.expanduser('~') +'/Images', title = 'select photo', \
@@ -195,10 +191,6 @@ class PopMenu:
         loaded.thumbnail((130,140))
         img = ImageTk.PhotoImage(loaded)
         self.photo_view.configure(image = img)
-
-    def contact_valide(self):
-        name   = self.name_entry.get()
-        number = self.numero_entry.get()
 
 
 def pop_menu_launcher():

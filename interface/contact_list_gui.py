@@ -2,19 +2,20 @@ from interface.tkinker_import import *
 from interface.support import *
 
 from models.models import UserModel, ContactModel
-from myutils import Contact_Struct
-import session_data
+from myutils import Contact_Struct, clean_string
 from session_data import read_token
-import config
 from config import BASE_DIR, IMAGES_DIR
-import color
 from interface.pop.add_contact_gui import pop_menu_launcher
-
 from .tooltip import ToolTip
-from PIL import Image, ImageTk
-from os import path
 from myutils import  ImageEdit
 from .message_box import *
+from PIL import Image, ImageTk
+from os import path
+from copy import deepcopy
+import config
+import time
+import color
+from typing import Union, NoReturn
 
 
 class ContactInfoGui:
@@ -71,12 +72,9 @@ class ContactInfoGui:
         self.Entry_numero.configure(selectforeground="white")
 
         self.photo_contact = tk.Label(self.Labelframe2)
-        load = Image.open(f'{IMAGES_DIR}/img.jpg')
-        load.thumbnail((139,155))
 
-        global _img0
-        _img0 = ImageTk.PhotoImage(load)
-        self.photo_contact.configure(image=_img0)
+        self.contact_img_view()
+
         self.photo_contact.configure(relief="groove")
         self.photo_contact.configure(text='''Label''')
         self.photo_contact.place(relx=0.668, rely=0.081, height=155, width=139
@@ -116,31 +114,52 @@ class ContactInfoGui:
         self.tooltip_font = "TkDefaultFont"
         self.add_contact_btn_tooltip = \
                 ToolTip(self.add_contact_btn, self.tooltip_font, '''ajouter un nouveau contact''')
+
         global photo_file
-        photo_file = False       
-        
+        photo_file = False
+        self.photo_file = None
+        self.file_img = None
+
+
+    def contact_img_view(self, img_source = f'{IMAGES_DIR}/img.jpg' ) -> NoReturn:
+        load = Image.open(img_source)
+        load.thumbnail((139, 155))
+        global _img0
+        _img0 = ImageTk.PhotoImage(load)
+        self.photo_contact.configure(image=_img0)
+
+
     def _get_selected(self):
         tmp_selection = contact_getted
         return tmp_selection
 
+
     def __validate_change(self):
+        '''Indique si une modification a eu lieu sur \n
+        le [nom, prenoms,numero,photo]  '''
+
         e_name = self.Entry_nom.get().lower()
         e_last_name = self.Entry_prenoms.get().lower()
         e_number = self.Entry_numero.get()
-        e_photo = photo_file
+        e_photo = self.photo_file
 
 
-        if contact_getted:
-            if (contact_getted.c_nom != e_name or contact_getted.c_prenoms != e_last_name \
-                or contact_getted.c_numero != e_number ) or e_photo :
+        if self.contact_getted:
+
+            if (self.contact_getted.c_nom.lower() != e_name or \
+                self.contact_getted.c_prenoms.lower() != e_last_name \
+                or self.contact_getted.c_numero != e_number ) or e_photo :
                 #NewContact = ContactModel(e_name, e_last_name, e_number, e_photo )
-                if photo_file:
+                if self.photo_file:
                 #e_photo = contact_getted.c_photo
-                    #print('photo changé')
-                    return 1, Contact_Struct(*[contact_getted.c_id, e_name, e_last_name, e_number,path_photo, contact_getted.c_user_id])
+                    print('photo changé')
+                    print("entry :", e_name,' ',e_last_name, ' ',e_number,' ', e_photo)
+
+                    return 1, Contact_Struct(*[self.contact_getted.c_id, e_name, e_last_name, e_number, e_photo, self.contact_getted.c_user_id])
                 else:
-                    #print('photo non changé')
-                    return 0, Contact_Struct(*[contact_getted.c_id, e_name, e_last_name, e_number,contact_getted.c_photo, contact_getted.c_user_id])      
+                    print('photo non changé')
+                    print("entry :", e_name,' ',e_last_name, ' ',e_number,' ', e_photo)
+                    return 0, Contact_Struct(*[self.contact_getted.c_id, e_name, e_last_name, e_number, self.contact_getted.c_photo, self.contact_getted.c_user_id])
             else:
                 #print('aucune modification apportée')
                 show_info('info', 'Auncune modification détectée !')
@@ -148,38 +167,45 @@ class ContactInfoGui:
         else:
             #print('impossible de modifier le contact , veuillez selectionnez un contact dans la liste')
             show_warming('Attention', 'Veuillez selectionnez un contact dans la liste! !')
-
             raise  BaseException('Veuillez selectionnez un contact dans la liste! ')
 
-    def __get_photo(self):
-        global path_photo
+    def refresh_entry(self):
+        self.Entry_nom.delete(0, tk.END)
+        self.Entry_prenoms.delete(0, tk.END)
+        self.Entry_numero.delete(0, tk.END)
+        self.photo_file = None
+        self.contact_getted = None
+        self.contact_img_view()
 
+    def __get_photo(self):
+        """Selection de fichier photo """
+        
         path_photo = filedialog.askopenfilename(initialdir=path.expanduser('~') +'/Images', title = 'select photo', \
-            filetypes=(("photo png", "*.png"), ("photo jpg", "*.jpg"), ("photo gif", ".gif"),("photo jpeg", "*.jpeg") ) )
+            filetypes=(("photo png", "*.png"), ("photo jpg", "*.jpg"), ("photo gif", "*.gif"),("photo jpeg", "*.jpeg")))
         return path_photo
 
     def __show_photo(self):
         
         global img
-        global file_img
-
+        
         file_img = self.__get_photo()
         try:
             loaded = Image.open(file_img)
             global loaded_tmp
             loaded_tmp = loaded
         except :
-            print('petit probleme')
+            print('soucis d\'ouverture de l\'image ')
         else:
             loaded.thumbnail((140,150))
             img = ImageTk.PhotoImage(loaded)
             self.photo_contact.configure(image = img)
 
-        return loaded
+        return file_img
 
     def change_photo(self):
-        global photo_file
-        photo_file = self.__show_photo()
+        self.photo_file = self.__show_photo()
+        
+
 
     def __save_photo(self, file_name):
 
@@ -191,15 +217,18 @@ class ContactInfoGui:
         return {}
 
     def __save_edit(self):
+        """For save Edit in contact row"""
+        
         status , contact_to_edit = self.__validate_change()
-        nom = contact_to_edit.c_nom
-        prenoms= contact_to_edit.c_prenoms
-        numero = contact_to_edit.c_numero
-        user_id = contact_to_edit.c_user_id
+        print("status :", status, ' to edit', contact_to_edit)
+        nom        = contact_to_edit.c_nom
+        prenoms    = contact_to_edit.c_prenoms
+        numero     = contact_to_edit.c_numero
+        user_id    = contact_to_edit.c_user_id
         contact_id = contact_to_edit.c_id
 
-        CurrentUser = UserModel(session_data.session_username)
-
+        #CurrentUser = UserModel(session_data.session_username)
+        CurrentUser = UserModel(read_token().u_name)
         updateContact = ContactModel(nom=nom, prenoms=prenoms, numero=numero , user_id=user_id ,\
          contact_id=contact_id )
 
@@ -229,7 +258,6 @@ class ContactInfoGui:
                     show_error('error', 'problème lors de l\' enregistrement !')
             else:
                 show_warming("error",'Le nom et Prénoms existes déja !')
-
         elif status == 0:
             #print('modification sans photo')
 
@@ -237,30 +265,41 @@ class ContactInfoGui:
                 update = updateContact.update()
                 if update :
                     show_info('info', 'Information enregistré !')
+                    self._show_contact()
                 else:
                     show_error('error', 'Le nom et Prénoms existes déja !')
                 #updateContact.update()
             else:
                 show_warming("error",'Le nom et Prénoms existes déja !')
-
         else:
             show_info('attentions','veuillez selectionner un contact à modifier !')
 
+        return self.refresh_entry()
+
     def delete_contact(self):
+        """Delete a selected contact from ScrolListBox
+        
+        Keyword arguments: contact id, user id
+        argument -- self.contact_id in the db, 
+                    self.user_id for current User of the session
+        Return: No return
+        """
+        
         if contact_getted:
             contact_id = contact_getted.c_id
             contact_user_id = contact_getted.c_user_id
             Contact_selected = ContactModel(contact_id = contact_id , user_id = contact_user_id)
-            response = show_yes_no('attentions','Vous le vous supprimer ce contact ?')
+            response = show_yes_no('attentions', 'Voulez vous supprimer ce contact ?')
             if response:
                 request = Contact_selected.delete()
                 if request:
                     show_info("info", 'contact supprimer avec succès !')
                     self.refresh_list()
+                    self.refresh_entry()
                 else:
-                    show_warming("Attention", 'echec de suppression !')       
+                    show_warming("Attention", 'echec de suppression !')
         else:
-            show_error('erreur','veuillez selectionner un contact dans la liste')
+            show_error('Erreur','veuillez selectionner un contact dans la liste')
 
 
 class ContactListGui(ContactInfoGui):
@@ -317,79 +356,80 @@ class ContactListGui(ContactInfoGui):
         self.TLabel1_1.configure(anchor='w')
         self.TLabel1_1.configure(justify='left')
         self.TLabel1_1.configure(text='''Numéro mobile''')
+
+        self.contact_getted = None
+        self.dictionnaire = {}
         self._show_contact()
         global contact_getted
         contact_getted = None
 
+
     def _show_contact(self):
-        user_cache = read_token()
-        current_user = UserModel(user_cache.u_name)
-        contact_name = list()
-        if current_user.user_is_valide() :
+        current_user = UserModel(read_token().u_name)
+        if current_user.user_is_valide():
             global contact_list
             contact_list = current_user.get_contact_list()
-            i = 1
-            #print(contact_list)
+                
+            index = 1
             for contact in contact_list:
-                self.Scrolledlistbox1.insert( i , f"{i}.{contact[1]} {contact[2]}")
-                conctact = list(contact)
-                #print('lsit conctact :', contact)
-                i += 1
-                if contact[2] :
-
-                    name_slug =  '_'.join(contact[2].split(' '))
-                    
-                else:
-                    name_slug = contact[2]
-
-               
-                name_slug2 = '_'.join(contact[1].replace("+", ' ').split(' '))
-
-                slug = str(f'{conctact[0]}_{name_slug2}')
-                slug.replace("(", "_").replace(")", "_").replace("'", "_").replace("-", "_")
-                print('new slug: ', slug)
-                #contact_name.append(slug)
-                contact_name.append(str(f'{contact[1]}_{name_slug}'))
-            #print(contact_name)
+                self.Scrolledlistbox1.insert( index , f"{index}.{contact[1].title()}")
+                index +=1
 
             global contact_dic
-            contact_dic = {name:value for name, value in zip(contact_name,contact_list)}
+            self.dictionnaire = contact_dic = self.make_dict_key(contact_list)
+            # with open('contact.txt', 'a') as files:
+                    # files.write(f"{self.dictionnaire }\n")
+        
+    def make_dict_key(self, contact_list : Union[list or tuple]):
+            index = 1
+            contact_name = []
+            for contact in contact_list:
+                contact = [i for i in contact]
+                contact_clean = clean_string(contact)
+                contact = deepcopy(contact_clean)
+                c_struct = Contact_Struct(*contact[:6])
 
+                name_key =  f'{index}_{c_struct.c_nom.lower()}'
+                contact_name.append(name_key)
+                index += 1
+           
+            contact_dic = {str(name):value for name, value in zip(contact_name, contact_list)}
+            ContactListGui.contact_dict = contact_dic
+
+            return contact_dic
 
     def selected(self, *args):
 
-        selection = self.Scrolledlistbox1.selection_get()
+        selection = self.Scrolledlistbox1.selection_get().lower()
+        contact_name = clean_string('_'.join(selection.split('.')))[0]
         assert len(selection)> 0, ''' mauvais selection '''
-        #contact_name = selection.strip().split('.')[1].strip().split(' ')[0]
-        #contact_name = selection.strip().split('.')[0]
-        contact_name = '_'.join(selection.split('.')[1].split(' '))
-        #print(contact_name)
-        #print("selection id:", contact_name)
-        if str(contact_name) in contact_dic.keys():
+        #contact_name = selection.split('.')[0]
+        #print("dict :",  contact_dic)
+        if str(contact_name) in self.dictionnaire:
+            finded = self.dictionnaire.get(str(contact_name))
             global contact_getted
-            contact_getted = Contact_Struct(*contact_dic.get(contact_name)[:6])
+            self.contact_getted = contact_getted = Contact_Struct(*finded)
+        else:
+            pass
         self._get_selected()
-        end = len(self.Entry_nom.get())
-        self.Entry_nom.delete(0, end)
+        self.Entry_nom.delete(0, tk.END)
         self.Entry_nom.insert(0, contact_getted.c_nom.title())
 
-        end = len(self.Entry_prenoms.get())
-        self.Entry_prenoms.delete(0, end)
-        self.Entry_prenoms.insert(0, contact_getted.c_prenoms.title())
+        self.Entry_prenoms.delete(0, tk.END)
+        self.Entry_prenoms.insert(0, self.contact_getted.c_prenoms.title())
 
-        end = len(self.Entry_numero.get())
-        self.Entry_numero.delete(0, end)
-        self.Entry_numero.insert(0, contact_getted.c_numero)
+        self.Entry_numero.delete(0, tk.END)
+        self.Entry_numero.insert(0, self.contact_getted.c_numero)
 
         try:
 
-            load = Image.open(f'{IMAGES_DIR}/{contact_getted.c_photo}.jpg')
+            load = Image.open(f'{IMAGES_DIR}/{self.contact_getted.c_photo}.jpg')
         except FileNotFoundError as e:
             try:
                 load = Image.open(f'{IMAGES_DIR}/{contact_getted.c_photo}.png')
             except  FileNotFoundError as e:
                 load = Image.open(f'{IMAGES_DIR}/img.jpg')
-        finally:          
+        finally:
             load.thumbnail((140,155))
             global _img0
             _img0 = ImageTk.PhotoImage(load)
@@ -397,14 +437,11 @@ class ContactListGui(ContactInfoGui):
 
         return args
 
-
     def refresh_list(self):
-        end = len(contact_list)
-        self.Scrolledlistbox1.delete(1, end)
+        self.clear_list()
+        self.refresh_entry()
         self._show_contact()
 
     def clear_list(self):
-        end = len(contact_list)
-        self.Scrolledlistbox1.delete(1, end)
-
-        
+        self.Scrolledlistbox1.delete(1, tk.END)
+    

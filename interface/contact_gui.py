@@ -4,15 +4,7 @@ from interface.pop.add_contact_gui import pop_menu_launcher
 from .tooltip import ToolTip
 from PIL import Image, ImageTk
 
-import os
-import sys
-from config import BASE_DIR, IMAGES_DIR
 
-prog_call = sys.argv[0]
-prog_location = os.path.split(prog_call)[0]
-
-
-img = ''
 class ContactGui:
        
         def __init__(self, top):
