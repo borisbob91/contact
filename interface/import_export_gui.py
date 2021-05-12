@@ -1,6 +1,7 @@
-#! user/bin/env python3
+#! /usr/bin/env python3
 #coding: utf-8
 
+from interface.pop.progress_gui import progress_launcher, PopProgressGui
 from views.import_contact import ImportContact, import_main
 
 from .tkinker_import import *
@@ -47,7 +48,7 @@ class ImportExport(ImportContact):
         self.export_btn.place(relx=0.238, rely=0.731, height=22, width=114
                 , bordermode='ignore')
         self.export_btn.configure(takefocus="")
-        self.export_btn.configure(text='''Exporter''')
+        self.export_btn.configure(text='''Exporter''', command=self.imp)
 
         self.TSeparator2 = ttk.Separator(self.import_export_frame)
         self.TSeparator2.place(relx=0.539, rely=0.11, relheight=0.876
@@ -75,5 +76,16 @@ class ImportExport(ImportContact):
                 , bordermode='ignore')
         self.import_btn.configure(takefocus="")
         self.import_btn.configure(text='''Importer''')
+        #self.import_btn.bind("<Button-1>", progress_launcher)
         self.import_btn.configure(command=self.run)
+        #self.import_btn.configure(command=progress_launcher)
+        #self.import_btn.bind("<Button-1>", self.run)
+
+    def imp(self):
+        progress_launcher()
+        
+    def control_progres(self, *args):
+            if self.file_path:
+                progress_launcher()
+
         

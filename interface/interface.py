@@ -9,9 +9,7 @@ from interface.time_gui import TimeGui
 from interface.session_gui import SessionGui
 from interface.Search_gui import SearchGui
 from interface.contact_list_gui import ContactListGui
-
 from interface.pop.add_contact_gui import pop_menu_launcher
-
 from interface.about_gui import about_gui_launcher
 
 class Interface:

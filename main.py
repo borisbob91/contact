@@ -5,7 +5,7 @@
 Here is the main module to launche the application
 """
 
-
+from interface.pop.progress_gui import progress_launcher
 from interface.login_gui import login_gui_launcher
 from interface import main_launcher
 from models import db_config
@@ -18,7 +18,6 @@ import  time
 logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
-
     config = config.configure()
     with  open('main.txt', "a") as files:
         files.write(f'last lauched : {time.strftime("%Y-%d-%m-%H:%M:%I") }  - {logger} \n')
