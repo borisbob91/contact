@@ -1,17 +1,19 @@
 import sqlite3
 import config
 
-def create_user_table():
-	try:
-		db = sqlite3.Connection(config.db_root)
-		cursor = db.cursor()
+print(config.DB_FILE)
 
-		create_user_table = '''CREATE TABLE  t_user(
+def create_user_table():
+	db = sqlite3.Connection(config.DB_FILE)
+	cursor = db.cursor()
+
+	create_user_table = '''CREATE TABLE  t_user(
 			id	INTEGER PRIMARY KEY AUTOINCREMENT,
 			t_user_name	TEXT NOT NULL,
 			t_user_passe	TEXT NOT NULL,
 			t_user_secret TEXT NOT NULL
 			)'''
+	try:
 		cursor.execute(create_user_table)
 	except Exception as e:
 		db.rollback()
@@ -25,11 +27,9 @@ def create_user_table():
 		return {}
 
 def create_repertoire_table():
-	try:
-		db = sqlite3.Connection(config.db_root)
-		cursor = db.cursor()
-
-		create_repertoire_table ='''CREATE TABLE t_repertoire(
+	db = sqlite3.Connection(config.DB_FILE)
+	cursor = db.cursor()
+	create_repertoire_table ='''CREATE TABLE t_repertoire(
 		id	INTEGER PRIMARY KEY AUTOINCREMENT,
 		c_name	TEXT NOT NULL,
 		c_prenoms	TEXT,
@@ -37,6 +37,7 @@ def create_repertoire_table():
 		c_photo     TEXT,
 		t_user_id	TEXT NOT NULL
 		)'''
+	try:
 		cursor.execute(create_repertoire_table)
 	except Exception as e:
 		db.rollback()
@@ -47,12 +48,13 @@ def create_repertoire_table():
 		db.close()
 
 def insert_contact():
-	try:
-		db = sqlite3.Connection(config.db_root)
-		cursor = db.cursor()
-		new_contact = ( 'Boris', 'bob', '0759188395', 'img', 1)
-		req = '''INSERT INTO t_repertoire(c_name, c_prenoms, c_numero, c_photo, t_user_id) 
+	
+	db = sqlite3.Connection(config.DB_FILE)
+	cursor = db.cursor()
+	new_contact = ( 'Boris', 'bob', '0759188395', 'img', 1)
+	req = '''INSERT INTO t_repertoire(c_name, c_prenoms, c_numero, c_photo, t_user_id) 
 			VALUES (?, ?, ?, ?, ?)'''
+	try:
 		cursor.execute(req, new_contact)
 			
 	except Exception as e:
@@ -66,17 +68,17 @@ def insert_contact():
 
 
 def configure():
-    try:
-        db = open(f'{config.BASE_DIR}/{config.db_root}', 'r')
-        db.close()
-    except FileNotFoundError:
-        create_repertoire_table()
-        create_user_table()
-        insert_contact()
+	try:
+		db = open(f'{config.DB_FILE}', 'r')
+		db.close()
+	except FileNotFoundError:
+		create_repertoire_table()
+		create_user_table()
+		insert_contact()
 
-        return 'new db created'
-    else:
-    	return {}
+		return 'new db created'
+	else:
+		return {}
 
 if __name__ == '__main__':
 	configure()

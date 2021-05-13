@@ -20,7 +20,7 @@ class UserModel:
 			return (self._username, self._password, self.get_id[0])
 
 	def __set_user(self):
-		db = sqlite3.Connection(config.db_root)
+		db = sqlite3.Connection(config.DB_FILE)
 		cursor = db.cursor()
 		new_user = (self._username, self._password, self._secret)
 		req = '''INSERT INTO t_user(t_user_name, t_user_passe, t_user_secret) 
@@ -31,7 +31,7 @@ class UserModel:
 
 	def __user_verification(self):
 
-		db = sqlite3.Connection(config.db_root)
+		db = sqlite3.Connection(config.DB_FILE)
 		cursor = db.cursor()
 		req = '''SELECT t_user_name FROM t_user WHERE t_user_name = ? '''
 		user_input_data = (self._username,)
@@ -65,7 +65,7 @@ class UserModel:
 
 	def __get_user(self):
 
-		db = sqlite3.Connection(config.db_root)
+		db = sqlite3.Connection(config.DB_FILE)
 		cursor = db.cursor()
 		req = '''SELECT  t_user_name, t_user_passe FROM t_user WHERE t_user_name = ? AND t_user_passe = ?'''
 		user_input_data = (self._username, self._password)
@@ -78,7 +78,7 @@ class UserModel:
 	def __get_user_id(self):
 		resultat = None
 		try:
-			db = sqlite3.Connection(config.db_root)
+			db = sqlite3.Connection(config.DB_FILE)
 			cursor = db.cursor()
 			req = '''SELECT id FROM t_user WHERE t_user_name = ?'''
 			user_session = (self._username,)
@@ -108,7 +108,7 @@ class UserModel:
 		return resultat
 
 	def __reset_pass_qeury(self, old_secret):
-		db = sqlite3.Connection(config.db_root)
+		db = sqlite3.Connection(config.DB_FILE)
 		cursor = db.cursor()
 		req = '''SELECT * FROM t_user WHERE t_user_name = ? AND t_user_secret = ?'''
 		user_input_data = (self._username, old_secret)
@@ -134,7 +134,7 @@ class UserModel:
 
 			id_user = self.get_id
 
-			db = sqlite3.Connection(config.db_root)
+			db = sqlite3.Connection(config.DB_FILE)
 			cursor = db.cursor()
 			cursor.execute(req, id_user)
 		except  Exception as e:
@@ -155,7 +155,7 @@ class UserModel:
 		if id_user > 0 :
 			if table_code == 1:
 				try:
-					db = sqlite3.connect(config.db_root)
+					db = sqlite3.connect(config.DB_FILE)
 					cursor = db.cursor()
 					req_data = (f"{query}%", f"{query}%", id_user)
 					req = """ SELECT * FROM t_repertoire  WHERE ( c_name like ? or c_prenoms like ? ) and t_user_id = ? GROUP BY c_name"""
@@ -169,7 +169,7 @@ class UserModel:
 
 			elif table_code == 0:
 				try:
-					db = sqlite3.connect(config.db_root)
+					db = sqlite3.connect(config.DB_FILE)
 					cursor = db.cursor()
 					req_data = (f"{query}%", id_user)
 					req = """ SELECT * FROM t_repertoire  WHERE c_numero like ? and t_user_id = ? GROUP BY c_numero"""
@@ -232,7 +232,7 @@ class ContactModel:
 
 	def __set_contact(self):
 		try:
-			db = sqlite3.Connection(config.db_root)
+			db = sqlite3.Connection(config.DB_FILE)
 			cursor = db.cursor()
 			new_contact = (self._contact_name, self._contact_lastname, self._contact_number, self._contact_photo_name, self._user_id)
 			req = '''INSERT INTO t_repertoire(c_name, c_prenoms, c_numero, c_photo, t_user_id) 
@@ -256,7 +256,7 @@ class ContactModel:
 
 	def __name_checker(self):
 		try:
-			db = sqlite3.Connection(config.db_root)
+			db = sqlite3.Connection(config.DB_FILE)
 			cursor = db.cursor()
 			req = "SELECT id, c_name, c_prenoms FROM t_repertoire WHERE (c_name = ? and c_prenoms = ? ) and t_user_id = ? "
 			user_to_check = (self._contact_name, self._contact_lastname, self._user_id)
@@ -273,7 +273,7 @@ class ContactModel:
 	def __number_checker(self) -> tuple:
 		try:
 
-			db = sqlite3.Connection(config.db_root)
+			db = sqlite3.Connection(config.DB_FILE)
 			cursor = db.cursor()
 			req = "SELECT c_numero FROM t_repertoire WHERE c_numero = ? and t_user_id = ?"
 			to_check = (self._contact_number, self._user_id)
@@ -303,7 +303,7 @@ class ContactModel:
 	
 	def __get_id(self) -> tuple:
 		''' return contact id '''
-		db = sqlite3.Connection(config.db_root)
+		db = sqlite3.Connection(config.DB_FILE)
 		cursor = db.cursor()
 		req = '''SELECT id FROM t_repertoire ORDER By id DESC'''
 		cursor.execute(req)
@@ -314,7 +314,7 @@ class ContactModel:
 
 	def __contact_update_query(self) -> int:
 		try:
-			db = sqlite3.Connection(config.db_root)		
+			db = sqlite3.Connection(config.DB_FILE)		
 			cursor = db.cursor()
 			query = (self._contact_name, self._contact_lastname, self._contact_number, self._contact_photo_name , self._contact_id , self._user_id)
 			statment = ''' UPDATE t_repertoire SET c_name = ? , c_prenoms = ?, c_numero = ?, c_photo = ? WHERE id = ? and t_user_id = ? '''
@@ -342,7 +342,7 @@ class ContactModel:
 		"""
 	
 		try:
-			db = sqlite3.Connection(config.db_root)		
+			db = sqlite3.Connection(config.DB_FILE)		
 			cursor = db.cursor()
 			query = (photo_name, contact_id, user_id)
 			statment = ''' UPDATE t_repertoire SET  c_photo = ? WHERE id = ? and t_user_id = ? '''
@@ -363,7 +363,7 @@ class ContactModel:
 	def __update_validator_query(self) -> tuple:
 		resultat = ()
 		try:
-			db = sqlite3.Connection(config.db_root)
+			db = sqlite3.Connection(config.DB_FILE)
 			cursor = db.cursor()
 			query = (self._contact_name, self._contact_lastname, self._contact_id, self._user_id)
 			statement = ''' SELECT count(*) FROM t_repertoire WHERE c_name = ? and c_prenoms = ?  AND id != ? and t_user_id = ? '''
@@ -393,7 +393,7 @@ class ContactModel:
 		statement = ''' DELETE from t_repertoire WHERE id = ? and t_user_id = ? '''
 		query = (self._contact_id, self._user_id)
 		try:
-			db = sqlite3.Connection(config.db_root)
+			db = sqlite3.Connection(config.DB_FILE)
 			cursor = db.cursor()
 			cursor.execute(statement, query)
 		except Exception as e:
@@ -486,7 +486,7 @@ class ExportModels:
 	def __get_all_contact_query(self):
 		rows = []
 		try:
-			db = sqlite3.Connection(config.db_root)
+			db = sqlite3.Connection(config.DB_FILE)
 			cursor = db.cursor()
 			statement = """ SELECT c_name, c_prenoms, c_numero FROM t_repertoire WHERE t_user_id = ? ORDER by c_name """
 			query = (self._user_id,)
@@ -513,7 +513,7 @@ class CheckSuperUser:
 
 	@classmethod
 	def init(cls, u_id, username, pwd):
-		db = sqlite3.Connection(config.db_root)
+		db = sqlite3.Connection(config.DB_FILE)
 		cursor = db.cursor()
 		# query = (self.u_id, self.username, self.pwd)
 		query = (u_id, username, pwd)
