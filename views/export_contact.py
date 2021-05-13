@@ -4,6 +4,7 @@ from interface.tkinker_import import *
 from models import ExportModels
 from session_data import read_token
 from config import  VCARD_FORMAT, DATA_ROOT, DELIMITER, vcard_VERSION
+from interface.message_box import show_info
 
 class ExportContact(ExportModels):
     my_directory = os.path.expanduser('~') + '/Documents'
@@ -29,7 +30,6 @@ class ExportContact(ExportModels):
 
         if format_choosed in self.action_callback().keys():
             action = self.action_callback().get(format_choosed)
-            print(format_choosed)
             action(format_choosed, contact_list)
    
 
@@ -71,6 +71,7 @@ class ExportContact(ExportModels):
                 i = 0
             files.write(delimiter[1] + '\n')
         files.close()
+        show_info("info", f'importation terminie. \n Destination: {my_file}')
             
 
     def make_csv(self, extension, contact_list) -> NoReturn:
@@ -86,7 +87,7 @@ class ExportContact(ExportModels):
                 if not l_name:
                     l_name = name
                 writer.writerow({'nom': name, 'prénoms': l_name, 'numero': num})
-        print("done", my_file)
+        show_info("info", f'importation terminie. \n Destination: {my_file}')
             
         
     def make_txt(self, extension, contact_list, delimiter = ','):
@@ -100,7 +101,7 @@ class ExportContact(ExportModels):
                 if not l_name:
                     l_name = name
                 files.write(f'{name} {delimiter} {l_name} {delimiter} {num}\n')
-        print('done', my_file)
+        show_info("info", f'importation terminie. \n Destination: {my_file}')
 
     def get_format(self):
         """  to retrieve the value of contact file format extension name"""
