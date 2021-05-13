@@ -3,15 +3,16 @@
 
 from interface.pop.progress_gui import progress_launcher, PopProgressGui
 from views.import_contact import ImportContact, import_main
-
+from views.export_contact import ExportContact
 from .tkinker_import import *
 
-class ImportExport(ImportContact):
+class ImportExport(ImportContact, ExportContact):
     
-    _formt_list = ['vcf','txt', 'csv']
+    _format_list = ['vcf','txt', 'csv']
 
     def __init__(self, top):
-        super().__init__()
+        ImportContact.__init__(self)
+        ExportContact.__init__(self)
         self.import_export_frame = tk.LabelFrame(top)
         self.import_export_frame.place(relx=0.329, rely=0.597, relheight=0.219
                 , relwidth=0.659)
@@ -23,7 +24,7 @@ class ImportExport(ImportContact):
                 , relwidth=0.261, bordermode='ignore')
         self.select_format_box.configure(font="-family {gothic} -size 11")
         self.select_format_box.configure(textvariable='')
-        self.select_format_box.configure(value = ImportExport._formt_list)
+        self.select_format_box.configure(value = ImportExport._format_list)
         self.select_format_box.set('choisir un format')
 
         self.Label2 = tk.Label(self.import_export_frame)
@@ -43,12 +44,13 @@ class ImportExport(ImportContact):
                 , bordermode='ignore')
         self.TButton3.configure(takefocus="")
         self.TButton3.configure(text='''Destination''')
+        self.TButton3.configure(command = self.choose_directory)
 
         self.export_btn = ttk.Button(self.import_export_frame)
         self.export_btn.place(relx=0.238, rely=0.731, height=22, width=114
                 , bordermode='ignore')
         self.export_btn.configure(takefocus="")
-        self.export_btn.configure(text='''Exporter''', command=self.imp)
+        self.export_btn.configure(text='''Exporter''', command=self.run_export )
 
         self.TSeparator2 = ttk.Separator(self.import_export_frame)
         self.TSeparator2.place(relx=0.539, rely=0.11, relheight=0.876

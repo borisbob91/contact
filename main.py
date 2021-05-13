@@ -5,15 +5,16 @@
 Here is the main module to launche the application
 """
 
-from interface.pop.progress_gui import progress_launcher
+import logging
+import  time
+import config
+
 from interface.login_gui import login_gui_launcher
 from interface import main_launcher
 from models import db_config
 from models.models import  CheckSuperUser
 from session_data import read_token
-import config
-import logging
-import  time
+
 
 logger = logging.getLogger(__name__)
 

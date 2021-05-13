@@ -3,9 +3,9 @@ import sqlite3
 
 from interface.message_box import  show_error, show_info, show_warming
 import base64
-import asyncio
 import config
 from copy import deepcopy
+from models import db_config
 
 class UserModel:
 
@@ -208,7 +208,8 @@ class UserModel:
 
 class ContactModel:
 
-	def __init__(self, nom: str=None, prenoms: str=None, numero: str=None, photo: str=None, user_id: int=None, contact_id: int=None):
+	def __init__(self, nom: str=None, prenoms: str=None, numero: str=None, photo: str=None, \
+		user_id: int=None, contact_id: int=None):
 		# assert str(nom).isalnum() or nom == None, '''Le nom doit etre en caractere'''
 		assert str(user_id).isnumeric() or user_id == None , 'id: <class int> and required'
 
@@ -328,7 +329,6 @@ class ContactModel:
 		finally:
 			db.close()
 
-
 	def __get_last_row_query(self, contact_id: int, photo_name, user_id: int):
 		""" Obet
 		
@@ -405,35 +405,6 @@ class ContactModel:
 			db.close()
 			return True
 
-	def _img_id_resolver(self):
-		try:
-			db = sqlite3.Connection(config.db_root)
-			cursor = db.cursor()
-			statement = ''' SELECT * FROM t_repertoire WHERE t_user_id = ? ORDER by id DESC '''
-			query = (self._user_id,)
-			cursor.execute(statement, query)
-		except Exception as e :
-			return None
-			print(e)
-		else:
-			resultat = cursor.fetchone()		
-		finally:
-			db.close()
-		#exemple de contact
-		#resultat = (506, 'achyseka', 'seka achy', '79813397', None, '2')
-		def auto_update(rows = resultat):
-			if rows:
-				rows = deepcopy(list(rows))
-				rows[4] = f'img_{rows[0]}'
-				rows  = deepcopy(tuple(rows))
-				self.__get_last_row_query(rows[0], rows[4], rows[5])
-		auto_update()
-
-		return 1
-
-		
-
-
 
 	def delete(self):
 		return self.__contact_delete_query()
@@ -492,6 +463,43 @@ class ImportModels(ContactModel):
 		
 		return cls(name, last_name, number, user_id)
 
+
+class ExportModels:
+	def __init__(self, user_id = None):
+		self._user_id = user_id
+	
+	@classmethod
+	def init_export(cls, user_id: int):
+		""" Initialize class : 
+			ExportModels(user_id)
+			this method must run before __retreive_contact_query() methode
+		
+		args:
+			user_id: int
+		"""
+		
+		return cls(int(user_id))
+		
+	def get_data(self):
+		return self.__get_all_contact_query()
+
+	def __get_all_contact_query(self):
+		rows = []
+		try:
+			db = sqlite3.Connection(config.db_root)
+			cursor = db.cursor()
+			statement = """ SELECT c_name, c_prenoms, c_numero FROM t_repertoire WHERE t_user_id = ? ORDER by c_name """
+			query = (self._user_id,)
+			cursor.execute(statement, query)
+		except Exception as e:
+			print("export: selete db fail. ", e)
+		else:
+			rows = cursor.fetchall()
+		finally:
+			db.close()
+		return rows
+	
+			
 
 class CheckSuperUser:
 

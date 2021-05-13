@@ -1,16 +1,15 @@
 # coding:utf-8
-from interface.pop.progress_gui import progress_launcher, PopProgressGui, progress_destroy, set_size
+#from interface.pop.progress_gui import progress_launcher, PopProgressGui, progress_destroy, set_size
 
-from typing import NoReturn
+import os
+from typing import NoReturn, Union
 from models import ImportModels
 from interface.tkinker_import import *
 from interface.message_box import show_info
-import os
 from models import ImportModels
 from session_data import read_token
 from time import time, sleep
 from config import DATA_ROOT
-from typing import Union
 from copy import deepcopy
 
 taille = ''
