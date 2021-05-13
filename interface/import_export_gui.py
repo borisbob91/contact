@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 #coding: utf-8
 
-from interface.pop.progress_gui import progress_launcher, PopProgressGui
+from interface.progress_gui import progress_launcher, PopProgressGui
 from views.import_contact import ImportContact, import_main
 from views.export_contact import ExportContact
 from .tkinker_import import *

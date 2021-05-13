@@ -1,5 +1,5 @@
 from interface.tkinker_import import *
-from interface.pop.add_contact_gui import pop_menu_launcher
+from interface.add_contact_gui import pop_menu_launcher
 
 from .tooltip import ToolTip
 from PIL import Image, ImageTk

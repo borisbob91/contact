@@ -5,7 +5,7 @@ from models.models import UserModel, ContactModel
 from myutils import Contact_Struct, clean_string
 from session_data import read_token
 from config import BASE_DIR, IMAGES_DIR
-from interface.pop.add_contact_gui import pop_menu_launcher
+from interface.add_contact_gui import pop_menu_launcher
 from .tooltip import ToolTip
 from myutils import  ImageEdit
 from .message_box import *

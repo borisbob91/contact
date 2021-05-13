@@ -8,4 +8,5 @@ setup(name='myutils',
     author_email='borisbob91@gmail.com',
     license='MIT',
     packages=['myutils', 'interface', 'images','models','views'],
+    package_dir =  find_packages('src')
     zip_safe=False)

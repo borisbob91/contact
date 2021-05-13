@@ -16,7 +16,7 @@ db_root = 'models/contact.db'
 to get more data, complete list like:
     VCARD_FORMAT = ['TEL;CELL', 'N', 'FN', ['PHOTO', 'ADDR']]
  """
-VCARD_FORMAT = [ 'N', 'FN', 'TEL;CELL', 'TEL;CELL']
+VCARD_FORMAT = [ 'N', 'FN', 'TEL;CELL']
 vcard_VERSION = 2.1
 DELIMITER = ['BEGIN:VCARD', 'END:VCARD']
 
