@@ -21,6 +21,10 @@ VCARD_FORMAT = [ 'N', 'FN', 'TEL;CELL']
 vcard_VERSION = 2.1
 DELIMITER = ['BEGIN:VCARD', 'END:VCARD']
 
+__author__ = 'Boris Bob'
+__version__ = '0.1.05.21'
+
+
 def configure():
 
     script_dir = BASE_DIR
@@ -40,5 +44,4 @@ def configure():
     
 
 if __name__ == '__main__':
-
     configure()

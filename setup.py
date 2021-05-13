@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='app_cli',
-    version='0.1',
+    version='0.1.05.21',
     description='Utilitaire fixant le Python Path',
     url='#',
     author='Boris Bob',
